@@ -1,0 +1,62 @@
+:toc: macro
+:toc-title: Summary
+:toclevels: 3
+:numbered:
+
+ifndef::env-github[:icons: font]
+ifdef::env-github[]
+:status:
+:outfilesuffix: .adoc
+:caution-caption: :fire:
+:important-caption: :exclamation:
+:note-caption: :paperclip:
+:tip-caption: :bulb:
+:warning-caption: :warning:
+endif::[]
+
+:back_to_top_target: top-target
+:back_to_top_label: ⬆ Back to top
+:back_to_top: <<{back_to_top_target},{back_to_top_label}>>
+
+:main_title: Excel Editor (API with Symfony)
+:git_project_base: excel-editor
+:git_project_api: {git_project_base}-api
+:git_project_spa: {git_project_base}-spa
+:git_project_insomnia: {git_project_base}-insomnia
+:git_username: jprivet-dev
+:git_url_api: https://github.com/{git_username}/{git_project_api}
+:git_url_spa: https://github.com/{git_username}/{git_project_spa}
+:git_url_insomnia: https://github.com/{git_username}/{git_project_insomnia}
+:git_clone_ssh_api: git@github.com:{git_username}/{git_project_api}.git
+:git_clone_ssh_spa: git@github.com:{git_username}/{git_project_spa}.git
+
+[#{back_to_top_target}]
+= {main_title}
+
+image:https://app.codacy.com/project/badge/Grade/65cecce3bac34c71ba7ba9035bbcabce["Codacy code quality", link="https://www.codacy.com/gh/jprivet-dev/excel-editor-api/dashboard?utm_source=github.com&utm_medium=referral&utm_content=jprivet-dev/excel-editor-api&utm_campaign=Badge_Grade"]
+
+toc::[]
+
+== Presentation
+
+Study of an API (Symfony) and a SPA (Angular), to load data in CSV/Excel format, with consultation and modification of this data online.
+
+|===
+| API (Symfony/Docker) | {git_url_api}
+| SPA (Angular/Docker) | {git_url_spa}
+| Insomnia - design, debug a test the API (https://insomnia.rest/) | {git_url_insomnia}
+|===
+
+== Comments, suggestions?
+
+Feel free to make comments/suggestions to me in the {git_url_api}/issues[Git issues section].
+
+{back_to_top}
+
+== License
+
+"{main_title}" is released under the {git_url_api}/blob/main/LICENSE[*MIT License*]
+
+---
+
+{back_to_top}
