@@ -3,23 +3,44 @@
     "type": "project",
     "license": "MIT",
     "description": "A minimal Symfony project recommended to create bare bones applications",
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {
-        "php": ">=8.2.0",
+        "php": ">=8.1.9",
         "ext-ctype": "*",
         "ext-iconv": "*",
-        "symfony/console": "6.2.*",
-        "symfony/dotenv": "6.2.*",
+        "doctrine/annotations": "^1.0",
+        "doctrine/doctrine-bundle": "^2.7",
+        "doctrine/doctrine-migrations-bundle": "^3.2",
+        "doctrine/orm": "^2.13",
+        "nelmio/cors-bundle": "^2.2",
+        "phpdocumentor/reflection-docblock": "^5.3",
+        "phpstan/phpdoc-parser": "^1.7",
+        "sensio/framework-extra-bundle": "^6.2",
+        "spatie/simple-excel": "^2.1",
+        "symfony/console": "6.1.*",
+        "symfony/dotenv": "6.1.*",
         "symfony/flex": "^2",
-        "symfony/framework-bundle": "6.2.*",
-        "symfony/runtime": "6.2.*",
-        "symfony/yaml": "6.2.*"
+        "symfony/form": "6.1.*",
+        "symfony/framework-bundle": "6.1.*",
+        "symfony/mime": "6.1.*",
+        "symfony/property-access": "6.1.*",
+        "symfony/property-info": "6.1.*",
+        "symfony/proxy-manager-bridge": "6.1.*",
+        "symfony/runtime": "6.1.*",
+        "symfony/serializer": "6.1.*",
+        "symfony/validator": "6.1.*",
+        "symfony/yaml": "6.1.*"
     },
     "config": {
         "allow-plugins": {
+            "composer/package-versions-deprecated": true,
             "symfony/flex": true,
             "symfony/runtime": true
+        },
+        "optimize-autoloader": true,
+        "preferred-install": {
+            "*": "dist"
         },
         "sort-packages": true
     },
@@ -60,8 +81,11 @@
     "extra": {
         "symfony": {
             "allow-contrib": false,
-            "require": "6.2.*",
+            "require": "6.1.*",
             "docker": true
         }
+    },
+    "require-dev": {
+        "symfony/maker-bundle": "^1.45"
     }
 }
