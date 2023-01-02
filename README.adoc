@@ -27,8 +27,14 @@ endif::[]
 :git_url_api: https://github.com/{git_username}/{git_project_api}
 :git_url_spa: https://github.com/{git_username}/{git_project_spa}
 :git_url_insomnia: https://github.com/{git_username}/{git_project_insomnia}
+:git_ssh_api: git@github.com:{git_username}/{git_project_api}
+:git_ssh_spa: git@github.com:{git_username}/{git_project_spa}
 :git_clone_ssh_api: git@github.com:{git_username}/{git_project_api}.git
 :git_clone_ssh_spa: git@github.com:{git_username}/{git_project_spa}.git
+
+:git_project_current: {git_project_api}
+:git_url_current: {git_url_api}
+:git_ssh_current: {git_ssh_api}
 
 [#{back_to_top_target}]
 = {main_title}
@@ -47,15 +53,63 @@ Study of an API (Symfony) and a SPA (Angular), to load data in CSV/Excel format,
 | Insomnia - design, debug a test the API (https://insomnia.rest/) | {git_url_insomnia}
 |===
 
+== Prerequisites
+
+Be sure to install the latest version of Docker Compose CLI plugin (https://docs.docker.com/compose/install/compose-plugin/). With the older generation of docker compose, I had encountered the following error:
+
+```
+$ docker-compose build --pull --no-cache
+...
+Status: Downloaded newer image for composer:2
+ ---> daa583eddaba
+Step 27/31 : COPY composer.* symfony.* ./
+COPY failed: no source files were specified
+ERROR: Service 'php' failed to build : Build failed
+```
+
+Problem solved with the latest generation:
+
+```
+$ docker compose build --pull --no-cache
+```
+
+{back_to_top}
+
+== Installation
+
+. `$ git clone {git_ssh_current}`.
+. `$ cd {git_project_current}`.
+. `$ make start` (Build fresh images & Up).
+. Open `https://localhost` and https://stackoverflow.com/a/15076602/1352334[accept the auto-generated TLS certificate].
+
+For the following times :
+
+* `$ make up` to start directly containers.
+* `$ make build` to build fresh images if necessary.
+
+NOTE: Use `$ make` to see all available commands.
+
+{back_to_top}
+
+== Docker environments
+
+When you run `$ docker compose up` it reads the overrides automatically (`docker-compose.yml` and `docker-compose.override.yml`).
+
+To deploy with this production Compose file you can run:
+
+```
+$  docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+```
+
 == Comments, suggestions?
 
-Feel free to make comments/suggestions to me in the {git_url_api}/issues[Git issues section].
+Feel free to make comments/suggestions to me in the {git_url_current}/issues[Git issues section].
 
 {back_to_top}
 
 == License
 
-"{main_title}" is released under the {git_url_api}/blob/main/LICENSE[*MIT License*]
+"{main_title}" is released under the {git_url_current}/blob/main/LICENSE[*MIT License*]
 
 ---
 
