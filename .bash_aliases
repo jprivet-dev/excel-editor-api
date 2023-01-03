@@ -14,5 +14,6 @@ fi
 alias php="$DOCKER_COMP_BASE exec php php"
 alias composer="$DOCKER_COMP_BASE exec php composer"
 alias symfony="$DOCKER_COMP_BASE exec php php bin/console"
+alias sf="symfony"
 
-echo -e '\033[1;42mAliases loaded\033[0m'
+echo -e '\033[1;42m Aliases loaded: php, composer, symfony, sf \033[0m'
