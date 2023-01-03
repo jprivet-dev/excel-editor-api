@@ -86,6 +86,7 @@
         }
     },
     "require-dev": {
-        "symfony/maker-bundle": "^1.45"
+        "symfony/maker-bundle": "^1.45",
+        "squizlabs/php_codesniffer": "3.*"
     }
 }
