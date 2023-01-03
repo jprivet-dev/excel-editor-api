@@ -1,3 +1,6 @@
+// Enable keyboard shortcuts
+:experimental:
+
 :toc: macro
 :toc-title: Summary
 :toclevels: 3
@@ -53,6 +56,8 @@ Study of an API (Symfony) and a SPA (Angular), to load data in CSV/Excel format,
 | Insomnia - design, debug a test the API (https://insomnia.rest/) | {git_url_insomnia}
 |===
 
+{back_to_top}
+
 == Prerequisites
 
 Be sure to install the latest version of Docker Compose CLI plugin (https://docs.docker.com/compose/install/compose-plugin/). With the older generation of docker compose, I had encountered the following error:
@@ -100,6 +105,62 @@ To deploy with this production Compose file you can run:
 ```
 $  docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 ```
+
+{back_to_top}
+
+== PHPStorm configuration
+
+=== Docker Compose-based remote PHP interpreter
+
+. In the *Settings/Preferences* dialog (kbd:[Ctrl+Alt+S]), go to *PHP*.
+. On the *PHP* page that opens, click the Browse button kbd:[...] next to the *CLI Interpreter* list.
+. In the *CLI Interpreters* dialog that opens, select "From Docker, Vagrant, VM, WSL, Remote...".
+. In the *Configure Remote PHP Interpreter* dialog that opens, select "Docker" :
+** *Server:* Docker
+** *Image name:* excel-editor-api-php:latest
+** *PHP interpreter path:* php
+. In the *Configure Remote PHP Interpreter* dialog, click the button *OK*.
+. In the *CLI Interpreters* dialog, click the button *OK*.
+
+image::doc/img/phpstorm-settings-php.png[]
+
+{back_to_top}
+
+=== PHP_CodeSniffer script associated with a PHP interpreter
+
+==== Installation
+
+NOTE: See https://github.com/squizlabs/PHP_CodeSniffer
+
+Include a dependency for `squizlabs/php_codesniffer` in the `composer.json` file:
+
+```json
+{
+    "require-dev": {
+        "squizlabs/php_codesniffer": "3.*"
+    }
+}
+```
+
+And update all:
+
+```
+$ make composer c=update    # with Makefile
+# OR
+$ composer update           # with .bash_aliases
+```
+
+{back_to_top}
+
+==== Configuration
+
+NOTE: See https://www.jetbrains.com/help/phpstorm/using-php-code-sniffer.html#configure-php-code-sniffer-script-associated-with-php-interpreter
+
+image::doc/img/phpstorm-settings-php-codesniffer.png[]
+
+TIP: After the configuration of PHP_CodeSniffer, PHPStorm will highlight the problematic lines in the files and can run PHP CS fixer.
+
+{back_to_top}
 
 == Comments, suggestions?
 
