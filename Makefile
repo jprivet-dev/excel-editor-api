@@ -74,7 +74,7 @@ logs: ## Show live logs
 
 ## — PHP 🚀 ———————————————————————————————————————————————————————————————————
 
-php: ## Run PHP, pass the parameter "c=" to run a given command, example: make composer c='bin/console'
+php: ## Run PHP, pass the parameter "c=" to run a given command, example: make composer c=bin/console
 	@$(eval c ?=)
 	$(PHP) $(c)
 
@@ -83,7 +83,7 @@ sh: ## Connect to the PHP FPM container
 
 ## — COMPOSER 🧙 ——————————————————————————————————————————————————————————————
 
-composer: ## Run composer. Pass the parameter "c=" to run a given command (example: make composer c='req symfony/orm-pack')
+composer: ## Run composer. Pass the parameter "c=" to run a given command (example: make composer c=req symfony/orm-pack)
 	@$(eval c ?=)
 	$(COMPOSER) $(c)
 
