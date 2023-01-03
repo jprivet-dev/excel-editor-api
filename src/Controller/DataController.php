@@ -35,8 +35,8 @@ class DataController extends AbstractController
 
     #[Route('/api/data', name: 'api_data_create', methods: ['POST'])]
     public function create(
-        Request             $request,
-        DataRepository      $dataRepository,
+        Request $request,
+        DataRepository $dataRepository,
         SerializerInterface $serializer
     ): JsonResponse {
 
@@ -59,9 +59,9 @@ class DataController extends AbstractController
 
     #[Route('/api/data/{id}', name: 'api_data_update', methods: ['PUT'])]
     public function update(
-        Request             $request,
-        Data                $currentData,
-        DataRepository      $dataRepository,
+        Request $request,
+        Data $currentData,
+        DataRepository $dataRepository,
         SerializerInterface $serializer
     ): JsonResponse {
         $data = $serializer->deserialize(

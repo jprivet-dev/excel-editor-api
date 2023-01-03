@@ -90,5 +90,4 @@ class DataImportService
 
         return $year ? \DateTimeImmutable::createFromFormat('Y', $year) : null;
     }
-
 }

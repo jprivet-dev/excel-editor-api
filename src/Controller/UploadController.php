@@ -17,9 +17,9 @@ class UploadController extends AbstractController
 {
     #[Route('/api/upload', name: 'api_upload', methods: ['POST'])]
     public function upload(
-        Request             $request,
-        FileUploadService   $fileUpload,
-        DataImportService   $importService,
+        Request $request,
+        FileUploadService $fileUpload,
+        DataImportService $importService,
         SerializerInterface $serializer
     ): JsonResponse {
         $requestFile = $request->files->get('file');
