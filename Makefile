@@ -21,7 +21,6 @@ PHP_CONT = $(DOCKER_COMP) exec php
 PHP      = $(PHP_CONT) php
 COMPOSER = $(PHP_CONT) composer
 SYMFONY  = $(PHP_CONT) bin/console
-PHPUNIT  = $(PHP_CONT) php bin/phpunit
 
 # Misc
 .DEFAULT_GOAL = help
@@ -73,11 +72,6 @@ stop_all: ## Stop all projects running containers without removing them
 logs: ## Show live logs
 	$(DOCKER_COMP) logs --tail=0 --follow
 
-## — TEST ✅ ——————————————————————————————————————————————————————————————————
-
-test: ## Run PHPUnit
-	$(PHPUNIT)
-
 ## — PHP 🚀 ———————————————————————————————————————————————————————————————————
 
 php: ## Run PHP, pass the parameter "c=" to run a given command, example: make composer c='bin/console'
@@ -89,7 +83,7 @@ sh: ## Connect to the PHP FPM container
 
 ## — COMPOSER 🧙 ——————————————————————————————————————————————————————————————
 
-composer: ## Run composer, pass the parameter "c=" to run a given command, example: make composer c='req symfony/orm-pack'
+composer: ## Run composer. Pass the parameter "c=" to run a given command (example: make composer c='req symfony/orm-pack')
 	@$(eval c ?=)
 	$(COMPOSER) $(c)
 
@@ -99,7 +93,7 @@ vendor: composer
 
 ## — SYMFONY 🎵 ———————————————————————————————————————————————————————————————
 
-sf: ## List all Symfony commands or pass the parameter "c=" to run a given command, example: make sf c=about
+sf: ## List all Symfony commands or pass the parameter "c=" to run a given command (example: make sf c=about)
 	@$(eval c ?=)
 	$(SYMFONY) $(c)
 
@@ -108,38 +102,52 @@ cc: sf
 
 ## — DOCTRINE 💽 ——————————————————————————————————————————————————————————————
 
-doctrine_db_create: ## Create the configured database
+db_create: ## Create the configured database
 	$(SYMFONY) doctrine:database:create --if-not-exists
 
-doctrine_db_drop: ## Drop the configured database
+db_drop: ## Drop the configured database
 	$(SYMFONY) doctrine:database:drop --if-exists --force
 
-doctrine_schema_validate: ## Validate the mapping files
-	$(SYMFONY) doctrine:schema:validate
-
-doctrine_mapping_info: ## List mapped entities
-	$(SYMFONY) doctrine:mapping:info
+db_reset: db_drop db_create migration_run ## Drop & Create the configured database & Execute a migration
 
 ##
 
-doctrine_migration_new: ## Make a new migration
+migration_new: ## Make a new migration
 	$(SYMFONY) make:migration
 
-doctrine_migration_diff: ## Generate a migration by comparing your current database to your mapping information
+migration_diff: ## Generate a migration by comparing your current database to your mapping information
 	$(SYMFONY) doctrine:migrations:diff
 
-doctrine_migration_run: ## Execute a migration to the latest available version
+migration_run: ## Execute a migration to the latest available version
 	$(SYMFONY) doctrine:migrations:migrate
 
-doctrine_migration_update: doctrine_migration_new doctrine_migration_run ## Make a new migration and run it
+migration_update: migration_new migration_run ## Make a new migration and run it
 
-doctrine_fixtures_load: ## Load fixtures
+##
+
+schema_validate: ## Validate the mappings
+	$(SYMFONY) doctrine:schema:validate
+
+mapping_info: ## List mapped entities
+	$(SYMFONY) doctrine:mapping:info
+
+fixtures_load: ## Load fixtures
 	$(SYMFONY) doctrine:fixtures:load
 
-doctrine_db_reset: doctrine_db_drop doctrine_db_create doctrine_migration_run ## Drop & Create the configured database & Execute a migration
+## — TEST & QUALITY ✅ ————————————————————————————————————————————————————————
+
+test: ## Run PHPUnit
+	$(PHP) bin/phpunit
+
+phpcs: ## Run PHP CS (PHP_CodeSniffer) on `src` folder by default. Pass the parameter "c=" to run a given command (example: make phpcs c=src/Kernel.php)
+	@$(eval c ?= src)
+	$(PHP_CONT) ./vendor/bin/phpcs $(c)
+
+phpcbf: ## Run PHP CS Fixer (PHP_CodeSniffer) on `src` folder by default. Pass the parameter "c=" to run a given command (example: make phpcbf c=src/Kernel.php)
+	@$(eval c ?= src)
+	$(PHP_CONT) ./vendor/bin/phpcbf $(c)
 
 ## — TROUBLESHOOTING 😵‍️ ———————————————————————————————————————————————————————
 
-# See https://github.com/dunglas/symfony-docker/blob/main/docs/troubleshooting.md
-permissions: ## Run it if you work on linux and cannot edit some of the project files
+permissions: ## Run it if you cannot edit some of the project files on Linux (https://github.com/dunglas/symfony-docker/blob/main/docs/troubleshooting.md)
 	$(DOCKER_COMP) run --rm php chown -R $$(id -u):$$(id -g) .
