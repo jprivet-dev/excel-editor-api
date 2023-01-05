@@ -147,6 +147,10 @@ phpcbf: ## Run PHP CS Fixer (PHP_CodeSniffer) on `src` folder by default. Pass t
 	@$(eval c ?= src)
 	$(PHP_CONT) ./vendor/bin/phpcbf $(c)
 
+phpmd: ## Run PHP Mess Detector on `src` folder by default. Pass the parameter "c=" to run a given command (example: make phpcs c=src/Kernel.php)
+	@$(eval c ?= src)
+	$(PHP_CONT) ./vendor/bin/phpmd $(c) ansi cleancode,codesize,controversial,design,naming,unusedcode
+
 ## — TROUBLESHOOTING 😵‍️ ———————————————————————————————————————————————————————
 
 permissions: ## Run it if you cannot edit some of the project files on Linux (https://github.com/dunglas/symfony-docker/blob/main/docs/troubleshooting.md)
