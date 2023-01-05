@@ -39,9 +39,18 @@ endif::[]
 :git_url_current: {git_url_api}
 :git_ssh_current: {git_ssh_api}
 
+// Releases
+:project_release: v0.0.0-beta
+:php_release: 8.2.0
+:php_version_underscore: 8_2_0
+:symfony_release: v6.1.10
+
 [#{back_to_top_target}]
 = {main_title}
 
+image:https://badgen.net/badge/release/{project_release}/blue[Project release,link=https://github.com/jprivet-dev/excel-editor-api/releases/tag/{project_release}]
+image:https://badgen.net/badge/php/{php_release}/7A86B8[PHP release,link=https://www.php.net/releases/{php_version_underscore}.php]
+image:https://badgen.net/badge/symfony/{symfony_release}/73D631[Symfony release,link=https://github.com/symfony/symfony/releases/tag/{symfony_release}]
 image:https://app.codacy.com/project/badge/Grade/65cecce3bac34c71ba7ba9035bbcabce["Codacy code quality", link="https://www.codacy.com/gh/jprivet-dev/excel-editor-api/dashboard?utm_source=github.com&utm_medium=referral&utm_content=jprivet-dev/excel-editor-api&utm_campaign=Badge_Grade"]
 
 toc::[]
@@ -159,6 +168,22 @@ NOTE: See https://www.jetbrains.com/help/phpstorm/using-php-code-sniffer.html#co
 image::doc/img/phpstorm-settings-php-codesniffer.png[]
 
 TIP: After the configuration of PHP_CodeSniffer, PHPStorm will highlight the problematic lines in the files and can run PHP CS fixer.
+
+{back_to_top}
+
+=== PHP Mess Detector script associated with a PHP interpreter
+
+==== Installation
+
+NOTE: See https://packagist.org/packages/phpmd/phpmd
+
+```
+$ composer require --dev phpmd/phpmd
+```
+
+==== Configuration
+
+NOTE: See https://www.jetbrains.com/help/phpstorm/using-php-mess-detector.html#configure-a-php-mess-detector-script-associated-with-a-php-interpreter
 
 {back_to_top}
 

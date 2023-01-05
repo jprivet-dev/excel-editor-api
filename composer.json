@@ -1,8 +1,10 @@
 {
-    "name": "symfony/skeleton",
+    "name": "excel-editor/api-with-symfony",
     "type": "project",
+    "version": "v0.0.0-beta",
+    "date": "2023-01-04",
     "license": "MIT",
-    "description": "A minimal Symfony project recommended to create bare bones applications",
+    "description": "Study of an API (Symfony) and a SPA (Angular), to load data in CSV/Excel format, with consultation and modification of this data online.",
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {
