@@ -1,0 +1,202 @@
+// Enable keyboard shortcuts
+:experimental:
+
+:toc: macro
+:toc-title: Summary
+:toclevels: 3
+:numbered:
+
+ifndef::env-github[:icons: font]
+ifdef::env-github[]
+:status:
+:outfilesuffix: .adoc
+:caution-caption: :fire:
+:important-caption: :exclamation:
+:note-caption: :paperclip:
+:tip-caption: :bulb:
+:warning-caption: :warning:
+endif::[]
+
+:back_to_top_target: top-target
+:back_to_top_label: ⬆ Back to top
+:back_to_top: <<{back_to_top_target},{back_to_top_label}>>
+
+:main_title: Excel Editor (API with Symfony)
+:git_project_base: excel-editor
+:git_project_api: {git_project_base}-api
+:git_project_spa: {git_project_base}-spa
+:git_project_insomnia: {git_project_base}-insomnia
+:git_username: jprivet-dev
+:git_url_api: https://github.com/{git_username}/{git_project_api}
+:git_url_spa: https://github.com/{git_username}/{git_project_spa}
+:git_url_insomnia: https://github.com/{git_username}/{git_project_insomnia}
+:git_ssh_api: git@github.com:{git_username}/{git_project_api}
+:git_ssh_spa: git@github.com:{git_username}/{git_project_spa}
+:git_clone_ssh_api: git@github.com:{git_username}/{git_project_api}.git
+:git_clone_ssh_spa: git@github.com:{git_username}/{git_project_spa}.git
+
+:git_project_current: {git_project_api}
+:git_url_current: {git_url_api}
+:git_ssh_current: {git_ssh_api}
+
+// Releases
+:project_release: v0.0.0-beta.0
+:php_release: 8.2.0
+:php_version_underscore: 8_2_0
+:symfony_release: v6.1.10
+
+[#{back_to_top_target}]
+= {main_title}
+
+image:https://badgen.net/badge/release/{project_release}/blue[Project release,link=https://github.com/jprivet-dev/excel-editor-api/releases/tag/{project_release}]
+image:https://badgen.net/badge/php/{php_release}/7A86B8[PHP release,link=https://www.php.net/releases/{php_version_underscore}.php]
+image:https://badgen.net/badge/symfony/{symfony_release}/73D631[Symfony release,link=https://github.com/symfony/symfony/releases/tag/{symfony_release}]
+image:https://app.codacy.com/project/badge/Grade/65cecce3bac34c71ba7ba9035bbcabce["Codacy code quality", link="https://www.codacy.com/gh/jprivet-dev/excel-editor-api/dashboard?utm_source=github.com&utm_medium=referral&utm_content=jprivet-dev/excel-editor-api&utm_campaign=Badge_Grade"]
+
+toc::[]
+
+== Presentation
+
+Study of an API (Symfony) and a SPA (Angular), to load data in CSV/Excel format, with consultation and modification of this data online.
+
+|===
+| API (Symfony/Docker) | {git_url_api}
+| SPA (Angular/Docker) | {git_url_spa}
+| Insomnia - design, debug a test the API (https://insomnia.rest/) | {git_url_insomnia}
+|===
+
+{back_to_top}
+
+== Prerequisites
+
+Be sure to install the latest version of Docker Compose CLI plugin (https://docs.docker.com/compose/install/compose-plugin/). With the older generation of docker compose, I had encountered the following error:
+
+```
+$ docker-compose build --pull --no-cache
+...
+Status: Downloaded newer image for composer:2
+ ---> daa583eddaba
+Step 27/31 : COPY composer.* symfony.* ./
+COPY failed: no source files were specified
+ERROR: Service 'php' failed to build : Build failed
+```
+
+Problem solved with the latest generation:
+
+```
+$ docker compose build --pull --no-cache
+```
+
+{back_to_top}
+
+== Installation
+
+. `$ git clone {git_ssh_current}`.
+. `$ cd {git_project_current}`.
+. `$ make start` (Build fresh images & Up).
+. Open `https://localhost` and https://stackoverflow.com/a/15076602/1352334[accept the auto-generated TLS certificate].
+
+For the following times :
+
+* `$ make up` to start directly containers.
+* `$ make build` to build fresh images if necessary.
+
+NOTE: Use `$ make` to see all available commands.
+
+{back_to_top}
+
+== Docker environments
+
+When you run `$ docker compose up` it reads the overrides automatically (`docker-compose.yml` and `docker-compose.override.yml`).
+
+To deploy with this production Compose file you can run:
+
+```
+$  docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+```
+
+{back_to_top}
+
+== PHPStorm configuration
+
+=== Docker Compose-based remote PHP interpreter
+
+. In the *Settings/Preferences* dialog (kbd:[Ctrl+Alt+S]), go to *PHP*.
+. On the *PHP* page that opens, click the Browse button kbd:[...] next to the *CLI Interpreter* list.
+. In the *CLI Interpreters* dialog that opens, select "From Docker, Vagrant, VM, WSL, Remote...".
+. In the *Configure Remote PHP Interpreter* dialog that opens, select "Docker" :
+** *Server:* Docker
+** *Image name:* excel-editor-api-php:latest
+** *PHP interpreter path:* php
+. In the *Configure Remote PHP Interpreter* dialog, click the button *OK*.
+. In the *CLI Interpreters* dialog, click the button *OK*.
+
+image::doc/img/phpstorm-settings-php.png[]
+
+{back_to_top}
+
+=== PHP_CodeSniffer script associated with a PHP interpreter
+
+==== Installation
+
+NOTE: See https://github.com/squizlabs/PHP_CodeSniffer
+
+Include a dependency for `squizlabs/php_codesniffer` in the `composer.json` file:
+
+```json
+{
+    "require-dev": {
+        "squizlabs/php_codesniffer": "3.*"
+    }
+}
+```
+
+And update all:
+
+```
+$ make composer c=update    # with Makefile
+# OR
+$ composer update           # with .bash_aliases
+```
+
+{back_to_top}
+
+==== Configuration
+
+NOTE: See https://www.jetbrains.com/help/phpstorm/using-php-code-sniffer.html#configure-php-code-sniffer-script-associated-with-php-interpreter
+
+image::doc/img/phpstorm-settings-php-codesniffer.png[]
+
+TIP: After the configuration of PHP_CodeSniffer, PHPStorm will highlight the problematic lines in the files and can run PHP CS fixer.
+
+{back_to_top}
+
+=== PHP Mess Detector script associated with a PHP interpreter
+
+==== Installation
+
+NOTE: See https://packagist.org/packages/phpmd/phpmd
+
+```
+$ composer require --dev phpmd/phpmd
+```
+
+==== Configuration
+
+NOTE: See https://www.jetbrains.com/help/phpstorm/using-php-mess-detector.html#configure-a-php-mess-detector-script-associated-with-a-php-interpreter
+
+{back_to_top}
+
+== Comments, suggestions?
+
+Feel free to make comments/suggestions to me in the {git_url_current}/issues[Git issues section].
+
+{back_to_top}
+
+== License
+
+"{main_title}" is released under the {git_url_current}/blob/main/LICENSE[*MIT License*]
+
+---
+
+{back_to_top}
