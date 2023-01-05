@@ -1,0 +1,5 @@
+---
+engines:
+    phpcs:
+        enabled: true
+        php_version: 8.2
