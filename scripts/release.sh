@@ -48,7 +48,7 @@ function bump_version_from_to() {
     echo -e "${C_BLUE}1. CREATE NEW RELEASE BRANCH ———————————————————————————————————————————${F_RESET}"
     echo "   $ git switch ${branch_develop}"
     echo "   $ git pull origin ${branch_develop}"
-    echo "   $ git switch -b ${branch_release}"
+    echo "   $ git switch -c ${branch_release}"
 
     echo
     echo -e "${C_BLUE}2. REPLACE THE VERSION —————————————————————————————————————————————————${F_RESET}"
