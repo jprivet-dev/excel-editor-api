@@ -11,6 +11,10 @@
         * https://github.com/phpmd/phpmd/tree/master/src/main/resources/rulesets
     </description>
 
+    <exclude-pattern>/config</exclude-pattern>
+    <exclude-pattern>/migrations</exclude-pattern>
+    <exclude-pattern>/public</exclude-pattern>
+
     <!-- https://phpmd.org/rules/#clean-code-rules -->
     <rule ref="rulesets/cleancode.xml" />
 

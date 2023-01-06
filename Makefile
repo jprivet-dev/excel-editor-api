@@ -2,6 +2,7 @@
 DOCKER_COMP_FILE 			= docker-compose.yml
 DOCKER_COMP_FILE_OVERRIDE 	= docker-compose.override.yml
 DOCKER_COMP_FILE_PROD 		= docker-compose.prod.yml
+FOLDERS						= bin,config,public,src
 
 # Executables (local)
 HAS_DOCKER_COMP_PLUGIN := $(shell docker compose version 2> /dev/null)
@@ -24,10 +25,10 @@ SYMFONY  = $(PHP_CONT) bin/console
 
 # Misc
 .DEFAULT_GOAL = help
-.PHONY        = help build up start down logs sh composer vendor sf cc
 
 ## — 🎵 🐳 THE SYMFONY DOCKER MAKEFILE 🐳 🎵 ——————————————————————————————————
 
+.PHONY: help
 help: ## Print self-documented Makefile
 	@grep -E '(^[.a-zA-Z_-]+[^:]+:.*##.*?$$)|(^#{2})' $(MAKEFILE_LIST) \
 	| awk 'BEGIN {FS = "## "}; \
@@ -52,106 +53,146 @@ help: ## Print self-documented Makefile
 
 ## — DOCKER 🐳 ————————————————————————————————————————————————————————————————
 
-build: ## Build or rebuild services
+.PHONY: build
+build: ## Build the first time or rebuild fresh images if necessary
 	$(DOCKER_COMP) build --pull --no-cache
 
+.PHONY: up
 up: ## Create and start containers
 	$(DOCKER_COMP) up --remove-orphans
 
+#.PHONY: up_prod
+#up_prod: ## Create and start containers (PRODUCTION environement)
+#	$(DOCKER_COMP) -f $(DOCKER_COMP_FILE) -f $(DOCKER_COMP_FILE_PROD) up
+
+.PHONY: detach
 detach: ## Create and start containers in detached mode (no logs)
 	$(DOCKER_COMP) up --remove-orphans --detach
 
-start: build up ## Build, create and start containers
-
+.PHONY: down
 down: ## Stop and remove containers, networks
 	$(DOCKER_COMP) down --remove-orphans
 
+.PHONY: stop_all
 stop_all: ## Stop all projects running containers without removing them
 	docker stop $$(docker ps -a -q)
 
+.PHONY: logs
 logs: ## Show live logs
 	$(DOCKER_COMP) logs --tail=0 --follow
 
+##
+
+.PHONY: start
+start: up ## up alias
+
+#.PHONY: start_prod
+#start_prod: up_prod ## up_prod alias
+
+.PHONY: stop
+stop: down ## down alias
+
 ## — PHP 🚀 ———————————————————————————————————————————————————————————————————
 
+.PHONY: php
 php: ## Run PHP, pass the parameter "c=" to run a given command, example: make composer c=bin/console
 	@$(eval c ?=)
 	$(PHP) $(c)
 
+.PHONY: sh
 sh: ## Connect to the PHP FPM container
 	$(PHP_CONT) sh
 
 ## — COMPOSER 🧙 ——————————————————————————————————————————————————————————————
 
+.PHONY: composer
 composer: ## Run composer. Pass the parameter "c=" to run a given command (example: make composer c=req symfony/orm-pack)
 	@$(eval c ?=)
 	$(COMPOSER) $(c)
 
+.PHONY: vendor
 vendor: ## Install vendors according to the current composer.lock file
 vendor: c=install --prefer-dist --no-dev --no-progress --no-scripts --no-interaction
 vendor: composer
 
 ## — SYMFONY 🎵 ———————————————————————————————————————————————————————————————
 
+.PHONY: sf
 sf: ## List all Symfony commands or pass the parameter "c=" to run a given command (example: make sf c=about)
 	@$(eval c ?=)
 	$(SYMFONY) $(c)
 
+.PHONY: cc
 cc: c=c:c ## Clear the cache
 cc: sf
 
 ## — DOCTRINE 💽 ——————————————————————————————————————————————————————————————
 
+.PHONY: db_create
 db_create: ## Create the configured database
 	$(SYMFONY) doctrine:database:create --if-not-exists
 
+.PHONY: db_drop
 db_drop: ## Drop the configured database
 	$(SYMFONY) doctrine:database:drop --if-exists --force
 
+.PHONY: db_reset
 db_reset: db_drop db_create migration_run ## Drop & Create the configured database & Execute a migration
 
 ##
 
+.PHONY: migration_new
 migration_new: ## Make a new migration
 	$(SYMFONY) make:migration
 
+.PHONY: migration_diff
 migration_diff: ## Generate a migration by comparing your current database to your mapping information
 	$(SYMFONY) doctrine:migrations:diff
 
+.PHONY: migration_run
 migration_run: ## Execute a migration to the latest available version
 	$(SYMFONY) doctrine:migrations:migrate
 
+.PHONY: migration_update
 migration_update: migration_new migration_run ## Make a new migration and run it
 
 ##
 
+.PHONY: schema_validate
 schema_validate: ## Validate the mappings
 	$(SYMFONY) doctrine:schema:validate
 
+.PHONY: mapping_info
 mapping_info: ## List mapped entities
 	$(SYMFONY) doctrine:mapping:info
 
+.PHONY: fixtures_load
 fixtures_load: ## Load fixtures
 	$(SYMFONY) doctrine:fixtures:load
 
 ## — TEST & QUALITY ✅ ————————————————————————————————————————————————————————
 
+.PHONY: test
 test: ## Run PHPUnit
 	$(PHP) bin/phpunit
 
-phpcs: ## Run PHP CS (PHP_CodeSniffer) on `src` folder by default. Pass the parameter "c=" to run a given command (example: make phpcs c=src/Kernel.php)
-	@$(eval c ?= src)
+.PHONY: phpcs
+phpcs: ## Run PHP CS (PHP_CodeSniffer). Pass the parameter "c=" to run a given command (example: make phpcs c=src/Kernel.php)
+	@$(eval c ?=)
 	$(PHP_CONT) ./vendor/bin/phpcs $(c)
 
-phpcbf: ## Run PHP CS Fixer (PHP_CodeSniffer) on `src` folder by default. Pass the parameter "c=" to run a given command (example: make phpcbf c=src/Kernel.php)
-	@$(eval c ?= src)
+.PHONY: phpcbf
+phpcbf: ## Run PHP CS Fixer (PHP_CodeSniffer). Pass the parameter "c=" to run a given command (example: make phpcbf c=src/Kernel.php)
+	@$(eval c ?=)
 	$(PHP_CONT) ./vendor/bin/phpcbf $(c)
 
+.PHONY: phpmd
 phpmd: ## Run PHP Mess Detector on `src` folder by default. Pass the parameter "c=" to run a given command (example: make phpcs c=src/Kernel.php)
-	@$(eval c ?= src)
-	$(PHP_CONT) ./vendor/bin/phpmd $(c) ansi cleancode,codesize,controversial,design,naming,unusedcode
+	@$(eval c ?= $(FOLDERS))
+	$(PHP_CONT) ./vendor/bin/phpmd $(c) ansi phpmd.xml
 
 ## — TROUBLESHOOTING 😵‍️ ———————————————————————————————————————————————————————
 
+.PHONY: permissions
 permissions: ## Run it if you cannot edit some of the project files on Linux (https://github.com/dunglas/symfony-docker/blob/main/docs/troubleshooting.md)
 	$(DOCKER_COMP) run --rm php chown -R $$(id -u):$$(id -g) .
