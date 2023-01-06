@@ -4,7 +4,6 @@
 # $ . scripts/release.sh
 
 function bump_version_from_to() {
-
 	local F_RESET="\033[0m"
 	local C_BLUE="\033[34m"
 	local C_GREEN="\033[32m"
@@ -13,23 +12,27 @@ function bump_version_from_to() {
 	local SPACE="+"
 	local DASH="%23"
 	local NEW_LINE="%0A"
+
 	local release_title="Release"
 	local prerelease=0
 	local last_tag=$(git describe --tags --abbrev=0)
+	local step=0
 
-	function replace_first_occurrence() {
-    	local from=$1
-    	local to=$2
-    	local file=$3
-    	echo
-    	echo "#"
-    	echo "# Bump version to ${to} in ${file} file"
-    	echo "#"
-    	echo
-    	sed -i "0,/${from}/{s/${from}/${to}/}" "${file}"
-    	git diff "${file}"
-    	echo
-    }
+	function bump_version_in_file() {
+		local from=$1
+		local to=$2
+		local file=$3
+
+		echo
+		echo "#"
+		echo "# Bump version to ${to} in ${file} file"
+		echo "#"
+		echo
+
+		# Replace only first occurrence
+		sed -i "0,/${from}/{s/${from}/${to}/}" "${file}"
+		git diff "${file}"
+	}
 
 	while true; do
 		echo -e -n "${C_GREEN}> Previous release: ${C_LIGHT_YELLOW}[${last_tag}]${F_RESET} "
@@ -89,15 +92,36 @@ function bump_version_from_to() {
 	echo -e "${C_BLUE}# To  : ${C_LIGHT_YELLOW}${to}${F_RESET}"
 	echo -e "${C_BLUE}#${F_RESET}"
 
+	((step++))
 	echo
-	echo -e "${C_BLUE}1. CREATE NEW RELEASE BRANCH ———————————————————————————————————————————${F_RESET}"
+	echo -e "${C_BLUE}${step}. CREATE NEW RELEASE BRANCH ———————————————————————————————————————————${F_RESET}"
 	echo
-	echo "$ git switch ${branch_develop}"
-	echo "$ git pull origin ${branch_develop}"
-	echo "$ git switch -c ${branch_release}"
+	echo "$ git fetch origin ${branch_develop}"
+	echo "$ git checkout -b ${branch_release} origin/${branch_develop}"
 
+	while true; do
+		echo -e -n "${C_GREEN}> Run the above git commands? (yes/no) ${C_LIGHT_YELLOW}[yes]${F_RESET} "
+
+		exec </dev/tty
+		read new_release_run_commands
+
+		if [ "${new_release_run_commands}" == "" ]; then
+			new_release_run_commands="yes"
+		fi
+
+		if [ "${new_release_run_commands}" == "yes" -o "${new_release_run_commands}" == "y" -o "${new_release_run_commands}" == "no" -o "${new_release_run_commands}" == "n" -o "${new_release_run_commands}" == "" ]; then
+			break
+		fi
+	done
+
+	if [ "${new_release_run_commands}" == "yes" -o "${new_release_run_commands}" == "y" ]; then
+		git fetch origin "${branch_develop}" && \
+		git checkout -b "${branch_release}" origin/"${branch_develop}"
+	fi
+
+	((step++))
 	echo
-	echo -e "${C_BLUE}2. REPLACE THE VERSION —————————————————————————————————————————————————${F_RESET}"
+	echo -e "${C_BLUE}${step}. REPLACE THE VERSION —————————————————————————————————————————————————${F_RESET}"
 	echo
 
 	while true; do
@@ -116,32 +140,54 @@ function bump_version_from_to() {
 	done
 
 	if [ "${replace_choice}" == "yes" -o "${replace_choice}" == "y" ]; then
-		replace_first_occurrence "${from}" "${to}" README.adoc
-		replace_first_occurrence "${from}" "${to}" composer.json
+		bump_version_in_file "${from}" "${to}" README.adoc
+		bump_version_in_file "${from}" "${to}" composer.json
 	fi
 
+	((step++))
 	echo
-	echo -e "${C_BLUE}3. SAVE THE FILES MODIFICATIONS ————————————————————————————————————————${F_RESET}"
+	echo -e "${C_BLUE}${step}. SAVE THE FILES MODIFICATIONS ————————————————————————————————————————${F_RESET}"
 	echo
 
 	echo "$ git add ."
 	echo "$ git commit -m \"release: bump version to ${to}\""
 	echo "$ git push origin ${branch_release}"
 
-	local new_pr_url="${project}/compare/${branch_develop}...${branch_release}"
-	new_pr_url+="?quick_pull=1"
-	new_pr_url+="&title=${release_title}${SPACE}${to}"
+	while true; do
+		echo -e -n "${C_GREEN}> Run the above git commands? (yes/no) ${C_LIGHT_YELLOW}[yes]${F_RESET} "
 
+		exec </dev/tty
+		read save_files_run_commands
+
+		if [ "${save_files_run_commands}" == "" ]; then
+			save_files_run_commands="yes"
+		fi
+
+		if [ "${save_files_run_commands}" == "yes" -o "${save_files_run_commands}" == "y" -o "${save_files_run_commands}" == "no" -o "${save_files_run_commands}" == "n" -o "${save_files_run_commands}" == "" ]; then
+			break
+		fi
+	done
+
+	if [ "${save_files_run_commands}" == "yes" -o "${save_files_run_commands}" == "y" ]; then
+		git add . && \
+		git commit -m "release: bump version to ${to}" && \
+		git push origin "${branch_release}"
+	fi
+
+	local new_pr_release_url="${project}/compare/${branch_develop}...${branch_release}"
+	new_pr_release_url+="?quick_pull=1"
+	new_pr_release_url+="&title=${release_title}${SPACE}${to}"
+
+	((step++))
 	echo
-	echo -e "${C_BLUE}4. CREATE THE PULL REQUEST ON DEVELOP ——————————————————————————————————${F_RESET}"
+	echo -e "${C_BLUE}${step}. CREATE THE PULL REQUEST ON DEVELOP ——————————————————————————————————${F_RESET}"
 	echo
 
-	echo "- Go on      : ${new_pr_url}"
+	echo "- Go on      : ${new_pr_release_url}"
 	echo "- Click on the button \"Create pull request\""
 	echo -e "- Title      : ${C_YELLOW}${release_title} ${to}${F_RESET}"
 	echo "- Description: Empty"
 	echo "- Click on the button \"Merge the pull request\""
-	echo
 
 	while true; do
 		echo -e -n "${C_GREEN}> What is the PR id? (e.g.: 210)${F_RESET} "
@@ -164,13 +210,14 @@ function bump_version_from_to() {
 		new_tag_url+="&prerelease=1"
 	fi
 
+	((step++))
 	echo
-	echo -e "${C_BLUE}5. TAG THE MERGE COMMIT ON DEVELOP —————————————————————————————————————${F_RESET}"
+	echo -e "${C_BLUE}${step}. TAG THE MERGE COMMIT ON DEVELOP —————————————————————————————————————${F_RESET}"
 	echo
 
 	echo "- Go on        : ${new_tag_url}"
 	echo -e "- Tag version  : ${C_YELLOW}${to}${F_RESET}"
-	echo "- Target       : In \"Recent Commits\", choose the last merge on ${branch_develop} branch"
+	echo "- Target       : Choose the ${branch_develop} branch"
 	echo -e "- Release title: ${C_YELLOW}${to}${F_RESET}"
 	echo "- Describe this release (copy/past the following text):"
 	echo
@@ -187,15 +234,47 @@ function bump_version_from_to() {
 	echo "- Click on the button \"Publish release\""
 
 	if [ "${prerelease}" == 0 ]; then
+		((step++))
 		echo
-		echo -e "${C_BLUE}6. DEPLOY ON MAIN ——————————————————————————————————————————————————————${F_RESET}"
+		echo -e "${C_BLUE}${step}. DEPLOY ON MAIN ——————————————————————————————————————————————————————${F_RESET}"
 		echo
 
-		echo "- Go on      : ${project}/compare/${branch_main}...${branch_develop}"
+		local new_pr_deploy_url="${project}/compare/${branch_main}...${branch_develop}"
+		new_pr_deploy_url+="?quick_pull=1"
+		new_pr_deploy_url+="&title=Deployment"
+
+		echo "- Go on      : ${new_pr_deploy_url}"
 		echo "- Click on the button \"Create pull request\""
 		echo -e "- Title      : ${C_YELLOW}Deployment${F_RESET}"
 		echo "- Description: Empty"
 		echo "- Click on the button \"Merge the pull request\""
+	fi
+
+	((step++))
+	echo
+	echo -e "${C_BLUE}${step}. CONTINUE THE JOB ON A NEXT BRANCH ———————————————————————————————————${F_RESET}"
+	echo
+	echo "$ git fetch origin ${branch_develop}"
+	echo "$ git checkout -b ${to}-next origin/${branch_develop}"
+
+	while true; do
+		echo -e -n "${C_GREEN}> Run the above git commands? (yes/no) ${C_LIGHT_YELLOW}[yes]${F_RESET} "
+
+		exec </dev/tty
+		read next_branch_run_commands
+
+		if [ "${next_branch_run_commands}" == "" ]; then
+			next_branch_run_commands="yes"
+		fi
+
+		if [ "${next_branch_run_commands}" == "yes" -o "${next_branch_run_commands}" == "y" -o "${next_branch_run_commands}" == "no" -o "${next_branch_run_commands}" == "n" -o "${next_branch_run_commands}" == "" ]; then
+			break
+		fi
+	done
+
+	if [ "${next_branch_run_commands}" == "yes" -o "${next_branch_run_commands}" == "y" ]; then
+		git fetch origin "${branch_develop}" && \
+		git checkout -b "${to}"-next origin/"${branch_develop}"
 	fi
 
 	echo
