@@ -40,16 +40,16 @@ endif::[]
 :git_ssh_current: {git_ssh_api}
 
 // Releases
-:project_release: v0.0.0-beta.0
+:project_release: v0.0.0-beta.2
 :php_release: 8.2.0
-:php_version_underscore: 8_2_0
+:php_release_underscore: 8_2_0
 :symfony_release: v6.1.10
 
 [#{back_to_top_target}]
 = {main_title}
 
 image:https://badgen.net/badge/release/{project_release}/blue[Project release,link=https://github.com/jprivet-dev/excel-editor-api/releases/tag/{project_release}]
-image:https://badgen.net/badge/php/{php_release}/7A86B8[PHP release,link=https://www.php.net/releases/{php_version_underscore}.php]
+image:https://badgen.net/badge/php/{php_release}/7A86B8[PHP release,link=https://www.php.net/releases/{php_release_underscore}.php]
 image:https://badgen.net/badge/symfony/{symfony_release}/73D631[Symfony release,link=https://github.com/symfony/symfony/releases/tag/{symfony_release}]
 image:https://app.codacy.com/project/badge/Grade/65cecce3bac34c71ba7ba9035bbcabce["Codacy code quality", link="https://www.codacy.com/gh/jprivet-dev/excel-editor-api/dashboard?utm_source=github.com&utm_medium=referral&utm_content=jprivet-dev/excel-editor-api&utm_campaign=Badge_Grade"]
 
@@ -69,7 +69,7 @@ Study of an API (Symfony) and a SPA (Angular), to load data in CSV/Excel format,
 
 == Prerequisites
 
-Be sure to install the latest version of Docker Compose CLI plugin (https://docs.docker.com/compose/install/compose-plugin/). With the older generation of docker compose, I had encountered the following error:
+Be sure to install the latest version of *Docker Compose CLI* plugin (https://docs.docker.com/compose/install/compose-plugin/). With the older generation of docker compose, I had encountered the following error:
 
 ```
 $ docker-compose build --pull --no-cache
@@ -93,15 +93,12 @@ $ docker compose build --pull --no-cache
 
 . `$ git clone {git_ssh_current}`.
 . `$ cd {git_project_current}`.
-. `$ make start` (Build fresh images & Up).
-. Open `https://localhost` and https://stackoverflow.com/a/15076602/1352334[accept the auto-generated TLS certificate].
+. `$ make build`: Build the first time or rebuild fresh images if necessary.
+. `$ make start`: (up) Create and start containers.
+. Open https://localhost and https://stackoverflow.com/a/15076602/1352334[accept the auto-generated TLS certificate].
+. `$ make stop`: (down) Stop and remove containers, networks.
 
-For the following times :
-
-* `$ make up` to start directly containers.
-* `$ make build` to build fresh images if necessary.
-
-NOTE: Use `$ make` to see all available commands.
+NOTE: `$ make` to see all available commands.
 
 {back_to_top}
 
@@ -118,6 +115,10 @@ $  docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 {back_to_top}
 
 == PHPStorm configuration
+
+IMPORTANT: The following configuration are provided for *PHPStorm 2022.3.1*
+
+{back_to_top}
 
 === Docker Compose-based remote PHP interpreter
 
@@ -167,7 +168,11 @@ NOTE: See https://www.jetbrains.com/help/phpstorm/using-php-code-sniffer.html#co
 
 image::doc/img/phpstorm-settings-php-codesniffer.png[]
 
-TIP: After the configuration of PHP_CodeSniffer, PHPStorm will highlight the problematic lines in the files and can run PHP CS fixer.
+[TIP]
+====
+* In *Coding standard*, select *Custom* and choose the `phpcs.xml` file of this repository.
+* After the configuration of *PHP_CodeSniffer*, *PHPStorm* will highlight the problematic lines in the files and can run *PHP CS fixer*.
+====
 
 {back_to_top}
 
@@ -184,6 +189,10 @@ $ composer require --dev phpmd/phpmd
 ==== Configuration
 
 NOTE: See https://www.jetbrains.com/help/phpstorm/using-php-mess-detector.html#configure-a-php-mess-detector-script-associated-with-a-php-interpreter
+
+image::doc/img/phpstorm-settings-php-mess-detector.png[]
+
+TIP: In *Custom rulesets*, click on *+* and choose the `phpmd.xml` file of this repository.
 
 {back_to_top}
 

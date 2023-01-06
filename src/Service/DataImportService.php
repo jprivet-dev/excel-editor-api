@@ -9,15 +9,15 @@ use Spatie\SimpleExcel\SimpleExcelReader;
 
 class DataImportService
 {
-    const NOM_DU_GROUPE = 'Nom du groupe';
-    const ORIGINE = 'Origine';
-    const VILLE = 'Ville';
-    const ANNEE_DEBUT = 'Année début';
-    const ANNEE_SEPARATION = 'Année séparation';
-    const FONDATEURS = 'Fondateurs';
-    const MEMBRES = 'Membres';
-    const COURANT_MUSICAL = 'Courant musical';
-    const PRESENTATION = 'Présentation';
+    public const NOM_DU_GROUPE = 'Nom du groupe';
+    public const ORIGINE = 'Origine';
+    public const VILLE = 'Ville';
+    public const ANNEE_DEBUT = 'Année début';
+    public const ANNEE_SEPARATION = 'Année séparation';
+    public const FONDATEURS = 'Fondateurs';
+    public const MEMBRES = 'Membres';
+    public const COURANT_MUSICAL = 'Courant musical';
+    public const PRESENTATION = 'Présentation';
 
     private $stats = [
         'alreadyExistsCount' => 0,
