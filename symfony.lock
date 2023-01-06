@@ -68,7 +68,7 @@
             "ref": "1019e5c08d4821cb9b77f4891f8e9c31ff20ac6f"
         },
         "files": [
-            "phpcs.xml.dist"
+            "phpcs.xml"
         ]
     },
     "symfony/console": {
