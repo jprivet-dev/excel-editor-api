@@ -4,19 +4,24 @@
 # $ . scripts/release.sh
 
 function bump_version_from_to() {
-	local SPLIT="——————————————————————————————————————————————————————"
+	local SPLIT="——————————————————————————————————————————————————————————————————————"
 	local F_RESET="\033[0m"
 	local C_BLUE="\033[34m"
 	local C_GREEN="\033[32m"
 	local C_YELLOW="\033[33m"
 	local C_LIGHT_YELLOW="\033[93m"
-	local SPACE="+"
-	local DASH="%23"
-	local NEW_LINE="%0A"
-	local BRANCH_RELEASE_PREFIX="release-stage"
-	local BRANCH_RELEASE_NEXT_SUFFIX="release-stage"
+	local ENCODE_SPACE="+"
+	local ENCODE_SHARP="%23"
+	local ENCODE_NEW_LINE="%0A"
 
-	local release_title="Release"
+	local GITHUB_PROJECT="https://github.com/jprivet-dev/excel-editor-api"
+	local BRANCH_RELEASE_PREFIX="release-stage"
+	local BRANCH_RELEASE_NEXT_SUFFIX="next"
+	local BRANCH_MAIN="main"
+	local RELEASE_LABEL="Release"
+	local PRERELEASE_LABEL="Pre-release"
+
+	local release_title="${RELEASE_LABEL}"
 	local prerelease=0
 	local last_tag=$(git describe --tags --abbrev=0)
 	local step=0
@@ -35,13 +40,11 @@ function bump_version_from_to() {
 
 		prompt_yes_no_choice=""
 
-		if [ "${default}" == "${YES}" -o "${default}" == "${YES_SHORT}" ]; then
-			default="${YES}"
-		elif [ "${default}" == "${NO}" -o "${default}" == "${NO_SHORT}" ]; then
-			default="${NO}"
-		else
-			default="${YES}"
-		fi
+		case $default in
+		"${YES}" | "${YES_SHORT}") default="${YES}" ;;
+		"${NO}" | "${NO_SHORT}") default="${NO}" ;;
+		*) default="${YES}" ;;
+		esac
 
 		while true; do
 			echo -e -n "${C_GREEN}> ${label}? (yes/no) ${C_LIGHT_YELLOW}[${default}]${F_RESET} "
@@ -49,18 +52,16 @@ function bump_version_from_to() {
 			exec </dev/tty
 			read choice
 
-			if [ "${choice}" == "${YES}" -o "${choice}" == "${YES_SHORT}" -o "${choice}" == "${NO}" -o "${choice}" == "${NO_SHORT}" -o "${choice}" == "" ]; then
+			if [[ "${default}" =~ (""|"${YES}"|"${YES_SHORT}"|"${NO}"|"${NO_SHORT}") ]]; then
 				break
 			fi
 		done
 
-		if [ "${choice}" == "${YES}" -o "${choice}" == "${YES_SHORT}" ]; then
-			choice="${YES}"
-		elif [ "${choice}" == "${NO}" -o "${choice}" == "${NO_SHORT}" ]; then
-			choice="${NO}"
-		else
-			choice="${default}"
-		fi
+		case $choice in
+		"${YES}" | "${YES_SHORT}") choice="${YES}" ;;
+		"${NO}" | "${NO_SHORT}") choice="${NO}" ;;
+		*) choice="${default}" ;;
+		esac
 
 		prompt_yes_no_choice="${choice}"
 	}
@@ -72,10 +73,11 @@ function bump_version_from_to() {
 		local example=$2
 		local default=$3
 
-		local complete_label="${C_GREEN}> ${label}:"
+		local complete_label="${C_GREEN}> ${label}"
 		if [ "${example}" != "" ]; then
-			complete_label+=" (e.g.: ${example})"
+			complete_label+=" (e.g. ${C_LIGHT_YELLOW}${example}${C_GREEN})"
 		fi
+		complete_label+=":"
 		if [ "${default}" != "" ]; then
 			complete_label+=" ${C_LIGHT_YELLOW}[${default}]"
 		fi
@@ -114,6 +116,15 @@ function bump_version_from_to() {
 		git diff "${file}"
 	}
 
+	function url_encode_light() {
+		local url=$1
+		url="${url// /${ENCODE_SPACE}}"
+		url="${url//#/${ENCODE_SHARP}}"
+		url="${url//\\n/${ENCODE_NEW_LINE}}"
+
+		echo "${url}"
+	}
+
 	prompt "Current release" "" "${last_tag}"
 	local from="${prompt_text}"
 
@@ -124,13 +135,9 @@ function bump_version_from_to() {
 	local prerelease_choice="${prompt_yes_no_choice}"
 
 	if [ "${prerelease_choice}" == "yes" ]; then
-		release_title="Pre-release"
+		release_title="${PRERELEASE_LABEL}"
 		prerelease=1
 	fi
-
-	local project="https://github.com/jprivet-dev/excel-editor-api"
-	local branch_main="main"
-	local branch_release="${BRANCH_RELEASE_PREFIX}-${to}"
 
 	echo
 	echo -e "${C_BLUE}#${F_RESET}"
@@ -139,20 +146,22 @@ function bump_version_from_to() {
 	echo -e "${C_BLUE}# To  : ${C_LIGHT_YELLOW}${to}${F_RESET}"
 	echo -e "${C_BLUE}#${F_RESET}"
 
+	local branch_release="${BRANCH_RELEASE_PREFIX}-${to}"
+
 	((step++))
 	echo
 	echo -e "${C_BLUE}${SPLIT}${F_RESET}"
 	echo -e "${C_BLUE}${step}. Create the branch '${branch_release}'${F_RESET}"
 	echo
-	echo "$ git fetch origin ${branch_main}"
-	echo "$ git checkout -b ${branch_release} origin/${branch_main}"
+	echo "$ git fetch origin ${BRANCH_MAIN}"
+	echo "$ git checkout -b ${branch_release} origin/${BRANCH_MAIN}"
 
 	prompt_yes_no "Run the above git commands"
 	local new_release_choice="${prompt_yes_no_choice}"
 
 	if [ "${new_release_choice}" == "yes" ]; then
-		git fetch origin "${branch_main}" &&
-			git checkout -b "${branch_release}" origin/"${branch_main}"
+		git fetch origin "${BRANCH_MAIN}" &&
+			git checkout -b "${branch_release}" origin/"${BRANCH_MAIN}"
 	fi
 
 	((step++))
@@ -161,7 +170,7 @@ function bump_version_from_to() {
 	echo -e "${C_BLUE}${step}. Replace the version${F_RESET}"
 	echo
 
-	prompt_yes_no "Replace ${from} by ${to} in the files (README.adoc, composer.json)"
+	prompt_yes_no "Replace '${from}' by '${to}' in the files (README.adoc, composer.json)"
 	local replace_choice="${prompt_yes_no_choice}"
 
 	if [ "${replace_choice}" == "yes" ]; then
@@ -186,14 +195,14 @@ function bump_version_from_to() {
 			git push origin "${branch_release}"
 	fi
 
-	local new_pr_release_url="${project}/compare/${branch_main}...${branch_release}"
+	local new_pr_release_url="${GITHUB_PROJECT}/compare/${BRANCH_MAIN}...${branch_release}"
 	new_pr_release_url+="?quick_pull=1"
-	new_pr_release_url+="&title=${release_title}${SPACE}${to}"
+	new_pr_release_url+="&title=${release_title}${ENCODE_SPACE}${to}"
 
 	((step++))
 	echo
 	echo -e "${C_BLUE}${SPLIT}${F_RESET}"
-	echo -e "${C_BLUE}${step}. Create the pull request on main${F_RESET}"
+	echo -e "${C_BLUE}${step}. Create the pull request on the branch '${BRANCH_MAIN}'${F_RESET}"
 	echo
 
 	echo "- Go on      : ${new_pr_release_url}"
@@ -205,33 +214,34 @@ function bump_version_from_to() {
 	prompt "PR id" "210"
 	local pr_id="${prompt_text}"
 
-	local new_tag_url="${project}/releases/new"
+	local new_tag_description="## ${release_title} ${to}\n**Pull Request**: #${pr_id}\n**Full Changelog**: ${GITHUB_PROJECT}/compare/${from}...${to}"
+
+	local new_tag_url="${GITHUB_PROJECT}/releases/new"
 	new_tag_url+="?tag=${to}"
-	new_tag_url+="&target=${branch_main}"
+	new_tag_url+="&target=${BRANCH_MAIN}"
 	new_tag_url+="&title=${to}"
-	new_tag_url+="&body=${DASH}${DASH}${SPACE}${release_title}${SPACE}${to}${NEW_LINE}**Pull${SPACE}Request**:${SPACE}${DASH}${pr_id}${NEW_LINE}**Full${SPACE}Changelog**:${SPACE}${project}/compare/${from}...${to}"
+	new_tag_url+="&body=${new_tag_description}"
 
 	if [ "${prerelease}" == 1 ]; then
 		new_tag_url+="&prerelease=1"
 	fi
 
+	new_tag_url=$(url_encode_light "${new_tag_url}")
+
 	((step++))
 	echo
 	echo -e "${C_BLUE}${SPLIT}${F_RESET}"
-	echo -e "${C_BLUE}${step}. Tag the merge commit on main${F_RESET}"
+	echo -e "${C_BLUE}${step}. Tag the merge commit on the branch '${BRANCH_MAIN}'${F_RESET}"
 	echo
 
 	echo "- Go on        : ${new_tag_url}"
 	echo -e "- Tag version  : ${C_YELLOW}${to}${F_RESET}"
-	echo "- Target       : Choose the ${branch_main} branch"
+	echo "- Target       : Choose the branch '${BRANCH_MAIN}'"
 	echo -e "- Release title: ${C_YELLOW}${to}${F_RESET}"
 	echo "- Describe this release (copy/past the following text):"
 	echo
-	echo -e "${C_YELLOW}## ${release_title} ${to}${F_RESET}"
-	echo -e "${C_YELLOW}**Pull Request**: #${pr_id}${F_RESET}"
-	echo -e "${C_YELLOW}**Full Changelog**: ${project}/compare/${from}...${to}${F_RESET}"
+	echo -e "${C_YELLOW}${new_tag_description}${F_RESET}"
 	echo
-	#echo "- Set as the latest release"
 
 	if [ "${prerelease}" == 1 ]; then
 		echo "- Set as a pre-release"
@@ -239,15 +249,17 @@ function bump_version_from_to() {
 
 	echo "- Click on the button \"Publish release\""
 
+	local branch_next="${to}-${BRANCH_RELEASE_NEXT_SUFFIX}"
+
 	((step++))
 	echo
 	echo -e "${C_BLUE}${SPLIT}${F_RESET}"
-	echo -e "${C_BLUE}${step}. Clean all & Continue the job on a next branch${F_RESET}"
+	echo -e "${C_BLUE}${step}. Clean all & Continue the job on the branch '${branch_next}'${F_RESET}"
 	echo
 	echo "$ git push origin --delete ${branch_release}"
-	echo "$ git checkout ${branch_main} -f"
+	echo "$ git checkout ${BRANCH_MAIN} -f"
 	echo "$ git branch -D ${branch_release}"
-	echo "$ git pull --ff origin ${branch_main}"
+	echo "$ git pull --ff origin ${BRANCH_MAIN}"
 	echo "$ git checkout -b ${to}-${BRANCH_RELEASE_NEXT_SUFFIX}"
 
 	prompt_yes_no "Run the above git commands"
@@ -255,9 +267,9 @@ function bump_version_from_to() {
 
 	if [ "${next_branch_choice}" == "yes" ]; then
 		git push origin --delete "${branch_release}" &&
-			git checkout "${branch_main}" -f &&
+			git checkout "${BRANCH_MAIN}" -f &&
 			git branch -D "${branch_release}" &&
-			git pull --ff origin "${branch_main}" &&
+			git pull --ff origin "${BRANCH_MAIN}" &&
 			git checkout -b "${to}"-"${BRANCH_RELEASE_NEXT_SUFFIX}"
 	fi
 
