@@ -83,14 +83,17 @@ logs: ## Show live logs
 
 ##
 
+.PHONY: install
+install: build start ## Build & Start
+
 .PHONY: start
-start: up ## up alias
+start: up ## 'up' alias
 
 #.PHONY: start_prod
 #start_prod: up_prod ## up_prod alias
 
 .PHONY: stop
-stop: down ## down alias
+stop: down ## 'down' alias
 
 ## — PHP 🚀 ———————————————————————————————————————————————————————————————————
 
