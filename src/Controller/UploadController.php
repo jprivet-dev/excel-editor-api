@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 
 #[Route('/api/upload')]
-class ApiUploadController extends AbstractController
+class UploadController extends AbstractController
 {
     #[Route('', name: 'api_upload', methods: ['POST'])]
     public function upload(
