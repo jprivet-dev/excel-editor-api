@@ -5,20 +5,12 @@ namespace App\Service;
 use App\Entity\Data;
 use App\Entity\FileUpload;
 use App\Repository\DataRepository;
+use App\Util\DataColumns;
+use App\Util\DateTimeUtil;
 use Spatie\SimpleExcel\SimpleExcelReader;
 
 class DataImportService
 {
-    public const NOM_DU_GROUPE = 'Nom du groupe';
-    public const ORIGINE = 'Origine';
-    public const VILLE = 'Ville';
-    public const ANNEE_DEBUT = 'Année début';
-    public const ANNEE_SEPARATION = 'Année séparation';
-    public const FONDATEURS = 'Fondateurs';
-    public const MEMBRES = 'Membres';
-    public const COURANT_MUSICAL = 'Courant musical';
-    public const PRESENTATION = 'Présentation';
-
     private $stats = [
         'alreadyExistsCount' => 0,
     ];
@@ -37,7 +29,7 @@ class DataImportService
 
         $rows->each(function (array $row) {
             $result = $this->dataRepository->findBy([
-                'nomDuGroupe' => $row[self::NOM_DU_GROUPE],
+                'nomDuGroupe' => $row[DataColumns::NOM_DU_GROUPE->value],
             ]);
 
             if (count($result) > 0) {
@@ -57,15 +49,15 @@ class DataImportService
         $data = new Data();
 
         // TODO: utiliser plutôt le serializer pour le formatage des données.
-        $data->setNomDuGroupe($this->string($row[self::NOM_DU_GROUPE]));
-        $data->setOrigine($this->string($row[self::ORIGINE]));
-        $data->setVille($this->string($row[self::VILLE]));
-        $data->setAnneeDebut($this->yearToDateTime($row[self::ANNEE_DEBUT]));
-        $data->setAnneeSeparation($this->yearToDateTime($row[self::ANNEE_SEPARATION]));
-        $data->setFondateurs($this->string($row[self::FONDATEURS]));
-        $data->setMembres($this->integer($row[self::MEMBRES]));
-        $data->setCourantMusical($this->string($row[self::COURANT_MUSICAL]));
-        $data->setPresentation($this->string($row[self::PRESENTATION]));
+        $data->setNomDuGroupe($this->string($row[DataColumns::NOM_DU_GROUPE->value]));
+        $data->setOrigine($this->string($row[DataColumns::ORIGINE->value]));
+        $data->setVille($this->string($row[DataColumns::VILLE->value]));
+        $data->setAnneeDebut(DateTimeUtil::yearToDateTime($row[DataColumns::ANNEE_DEBUT->value]));
+        $data->setAnneeSeparation(DateTimeUtil::yearToDateTime($row[DataColumns::ANNEE_SEPARATION->value]));
+        $data->setFondateurs($this->string($row[DataColumns::FONDATEURS->value]));
+        $data->setMembres($this->integer($row[DataColumns::MEMBRES->value]));
+        $data->setCourantMusical($this->string($row[DataColumns::COURANT_MUSICAL->value]));
+        $data->setPresentation($this->string($row[DataColumns::PRESENTATION->value]));
 
         $this->dataRepository->add($data, true);
     }
@@ -82,12 +74,5 @@ class DataImportService
     private function integer(?string $value): ?int
     {
         return (int)trim($value) ?? null;
-    }
-
-    private function yearToDateTime(?string $year): ?\DateTimeImmutable
-    {
-        $year = trim($year);
-
-        return $year ? \DateTimeImmutable::createFromFormat('Y', $year) : null;
     }
 }
