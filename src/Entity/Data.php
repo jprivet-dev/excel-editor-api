@@ -5,8 +5,13 @@ namespace App\Entity;
 use App\Repository\DataRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: DataRepository::class)]
+#[UniqueEntity(
+    fields: ['nomDuGroupe'],
+    message: "The music group {{ value }} already exists."
+)]
 class Data
 {
     #[ORM\Id]
@@ -14,7 +19,7 @@ class Data
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, unique: true)]
     private ?string $nomDuGroupe = null;
 
     #[ORM\Column(length: 255, nullable: true)]

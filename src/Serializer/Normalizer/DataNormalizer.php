@@ -3,7 +3,6 @@
 namespace App\Serializer\Normalizer;
 
 use App\Entity\Data;
-use Symfony\Component\ErrorHandler\Exception\FlattenException;
 use Symfony\Component\Serializer\Exception\InvalidArgumentException;
 use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
