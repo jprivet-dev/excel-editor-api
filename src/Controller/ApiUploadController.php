@@ -13,9 +13,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 
-class UploadController extends AbstractController
+#[Route('/api/upload')]
+class ApiUploadController extends AbstractController
 {
-    #[Route('/api/upload', name: 'api_upload', methods: ['POST'])]
+    #[Route('', name: 'api_upload', methods: ['POST'])]
     public function upload(
         Request $request,
         FileUploadService $fileUpload,
