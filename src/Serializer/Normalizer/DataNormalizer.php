@@ -50,7 +50,7 @@ class DataNormalizer implements NormalizerInterface, DenormalizerInterface, Cach
         $data = ArrayUtil::trim($data);
         $data = ArrayUtil::emptyStringsAsNull($data);
 
-        return $this->normalizer->denormalize($data, Data::class);
+        return $this->normalizer->denormalize($data, Data::class, $format, $context);
     }
 
     public function supportsDenormalization(mixed $data, string $type, string $format = null): bool
