@@ -57,7 +57,7 @@ class DataController extends AbstractController
         return $this->json($data);
     }
 
-    #[Route('/{id}', name: 'api_data_update', methods: ['PUT'])]
+    #[Route('/{id}', name: 'api_data_update', methods: ['PATCH'])]
     public function update(
         Request $request,
         Data $data,
@@ -70,8 +70,6 @@ class DataController extends AbstractController
             'json',
             [AbstractNormalizer::OBJECT_TO_POPULATE => $data]
         );
-
-        // TODO: vérifier que le nom du groupe mis à jour n'est pas déjà pris.
 
         $dataRepository->add($updatedData, true);
 
