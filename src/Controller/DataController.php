@@ -8,7 +8,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -16,8 +18,8 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 #[Route('/api/data')]
 class DataController extends AbstractController
 {
-    #[Route('', name: 'api_data_read_all', methods: ['GET'])]
-    public function read(DataRepository $dataRepository): JsonResponse
+    #[Route('', name: 'api_data_list', methods: ['GET'])]
+    public function list(DataRepository $dataRepository): JsonResponse
     {
         return $this->json($dataRepository->findAll());
     }
@@ -27,23 +29,30 @@ class DataController extends AbstractController
         Request $request,
         DataRepository $dataRepository,
         SerializerInterface $serializer,
-        ValidatorInterface $validator
+        ValidatorInterface $validator,
+        UrlGeneratorInterface $urlGenerator
     ): JsonResponse {
         /** @var Data $data */
         $data = $serializer->deserialize($request->getContent(), Data::class, 'json');
         $errors = $validator->validate($data);
 
-        if ($errors->count() > 0) {
-            return $this->json($errors, Response::HTTP_BAD_REQUEST);
+        if ($errors->count()) {
+            throw new HttpException(Response::HTTP_BAD_REQUEST, $errors);
         }
 
         $dataRepository->add($data, true);
 
-        return $this->json($data, Response::HTTP_CREATED);
+        $location = $urlGenerator->generate(
+            'api_data_read',
+            ['id' => $data->getId()],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
+
+        return $this->json($data, Response::HTTP_CREATED, ['Location' => $location]);
     }
 
     #[Route('/{id}', name: 'api_data_read', methods: ['GET'])]
-    public function readItem(Data $data): JsonResponse
+    public function read(Data $data): JsonResponse
     {
         return $this->json($data);
     }
