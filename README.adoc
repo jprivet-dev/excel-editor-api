@@ -62,7 +62,7 @@ Study of an API (Symfony) and a SPA (Angular), to load data in CSV/Excel format,
 |===
 | API (Symfony/Docker) | {git_url_api}
 | SPA (Angular/Docker) | {git_url_spa}
-| Insomnia - design, debug a test the API (https://insomnia.rest/) | {git_url_insomnia}
+| Insomnia - design, debug and test the API (https://insomnia.rest/) | {git_url_insomnia}
 |===
 
 {back_to_top}
@@ -193,6 +193,98 @@ NOTE: See https://www.jetbrains.com/help/phpstorm/using-php-mess-detector.html#c
 image::doc/img/phpstorm-settings-php-mess-detector.png[]
 
 TIP: In *Custom rulesets*, click on *+* and choose the `phpmd.xml` file of this repository.
+
+{back_to_top}
+
+== Style Guide
+
+=== JSON naming convention
+
+[NOTE]
+====
+* https://stackoverflow.com/questions/5543490/json-naming-convention-snake-case-camelcase-or-pascalcase
+* https://google.github.io/styleguide/jsoncstyleguide.xml?showone=Property_Name_Format#Property_Name_Format
+====
+
+That project (API & SPA) use the `camelCase` format for the property names of JSON responses:
+
+```
+{
+  "thisPropertyIsAnIdentifier": "identifier value"
+}
+```
+
+{back_to_top}
+
+=== Exceptions: return errors into JSON format
+
+[NOTE]
+====
+* https://symfony.com/doc/current/controller/error_pages.html#working-with-the-kernel-exception-event
+* https://symfony.com/doc/current/event_dispatcher.html#creating-an-event-listener
+* https://symfonycasts.com/screencast/deep-dive/flatten-exception
+* https://openclassrooms.com/fr/courses/7709361-construisez-une-api-rest-avec-symfony/7795134-gerez-les-erreurs-et-ajoutez-la-validation
+====
+
+In this project, *I will not use a listener or subscriber to force all errors into JSON format*. As for example with the following subscriber:
+
+```php
+namespace App\EventSubscriber;
+
+use Symfony\Component\ErrorHandler\Exception\FlattenException;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\Serializer\SerializerInterface;
+
+class ExceptionSubscriber implements EventSubscriberInterface
+{
+    public function __construct(private SerializerInterface $serializer)
+    {
+    }
+
+    public function onKernelException(ExceptionEvent $event): void
+    {
+        $response = new JsonResponse();
+
+        $exception = $event->getThrowable();
+        $flattenException = FlattenException::createFromThrowable($exception);
+        $data = $this->serializer->normalize($flattenException);
+        $response->setData($data);
+
+        // HttpExceptionInterface is a special type of exception that
+        // holds status code and header details
+        if ($exception instanceof HttpExceptionInterface) {
+            $response->setStatusCode($exception->getStatusCode());
+            $response->headers->replace($exception->getHeaders());
+        } else {
+            $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        $event->setResponse($response);
+    }
+
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            KernelEvents::EXCEPTION => 'onKernelException',
+        ];
+    }
+}
+```
+
+Instead, I'll let the user choose the format of the response (HTML, JSON, XML or other) by properly using the `Accept` header request:
+
+```
+$ curl https://localhost/api/data --header 'Accept: application/json'
+```
+
+In the `SerializerErrorRenderer::render()` of Symfony, a `FlattenException` is created from the exception and is passed to the serializer, with the format from the request. `Accept: application/json` change the "preferred format" on the request to JSON.
+
+TIP: In addition, the JSON error will be automatically filled in depending on the environment (dev or prod).
 
 {back_to_top}
 

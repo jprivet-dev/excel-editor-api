@@ -6,18 +6,24 @@ use App\Entity\Data;
 use App\Entity\FileUpload;
 use App\Repository\DataRepository;
 use Spatie\SimpleExcel\SimpleExcelReader;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 
 class DataImportService
 {
-    public const NOM_DU_GROUPE = 'Nom du groupe';
-    public const ORIGINE = 'Origine';
-    public const VILLE = 'Ville';
-    public const ANNEE_DEBUT = 'Année début';
-    public const ANNEE_SEPARATION = 'Année séparation';
-    public const FONDATEURS = 'Fondateurs';
-    public const MEMBRES = 'Membres';
-    public const COURANT_MUSICAL = 'Courant musical';
-    public const PRESENTATION = 'Présentation';
+    /**
+     * Expected columns in the file to be imported.
+     */
+    private $headersMapping = [
+        'Nom du groupe' => 'nomDuGroupe',
+        'Origine' => 'origine',
+        'Ville' => 'ville',
+        'Année début' => 'anneeDebut',
+        'Année séparation' => 'anneeSeparation',
+        'Fondateurs' => 'fondateurs',
+        'Membres' => 'membres',
+        'Courant musical' => 'courantMusical',
+        'Présentation' => 'presentation',
+    ];
 
     private $stats = [
         'alreadyExistsCount' => 0,
@@ -25,19 +31,25 @@ class DataImportService
 
     public function __construct(
         readonly string $uploadsDirectory,
-        private DataRepository $dataRepository
+        private DataRepository $dataRepository,
+        private DenormalizerInterface $denormalizer
     ) {
     }
 
     public function import(FileUpload $file): array
     {
-        $path = sprintf('%s/%s', $this->uploadsDirectory, $file->getFilename());
-        $rows = SimpleExcelReader::create($path)->getRows();
         $this->stats['alreadyExistsCount'] = 0;
+        $path = sprintf('%s/%s', $this->uploadsDirectory, $file->getFilename());
+        $reader = SimpleExcelReader::create($path);
 
-        $rows->each(function (array $row) {
+        $reader->useHeaders(array_values($this->headersMapping));
+        // BUG: $reader->getHeaders() & $reader->getOriginalHeaders() can only
+        // be called once before validateOriginalHeaders().
+        $this->validateOriginalHeaders($reader->getOriginalHeaders());
+
+        $reader->getRows()->each(function (array $row) {
             $result = $this->dataRepository->findBy([
-                'nomDuGroupe' => $row[self::NOM_DU_GROUPE],
+                'nomDuGroupe' => $row['nomDuGroupe'],
             ]);
 
             if (count($result) > 0) {
@@ -52,42 +64,48 @@ class DataImportService
         return $this->stats;
     }
 
+    private function validateOriginalHeaders(array $headers): void
+    {
+        $expectedHeaders = array_keys($this->headersMapping);
+        $notAllowed = array_diff($headers, $expectedHeaders);
+        $notAllowedCount = count($notAllowed);
+
+        if ($notAllowedCount) {
+            $message = $notAllowedCount > 1
+                ? 'The columns [%s] in the imported file are not allowed.'
+                : 'The column "%s" in the imported file is not allowed.';
+
+            throw new \Exception(sprintf($message, implode(', ', $notAllowed)));
+        }
+
+        $mandatory = array_diff($expectedHeaders, $headers);
+        $mandatoryCount = count($mandatory);
+
+        if ($mandatoryCount) {
+            $message = $mandatoryCount > 1
+                ? 'The mandatory columns [%s] are not present in the imported file.'
+                : 'The mandatory column "%s" is not present in the imported file.';
+
+            throw new \Exception(sprintf($message, implode(', ', $mandatory)));
+        }
+
+        $ordered = array_diff_assoc($headers, $expectedHeaders);
+
+        if (count($ordered)) {
+            throw new \Exception(
+                sprintf(
+                    'The columns [%s] of the imported file are not in the right order.',
+                    implode(', ', $ordered)
+                )
+            );
+        }
+    }
+
     private function add(array $row): void
     {
-        $data = new Data();
-
-        // TODO: utiliser plutôt le serializer pour le formatage des données.
-        $data->setNomDuGroupe($this->string($row[self::NOM_DU_GROUPE]));
-        $data->setOrigine($this->string($row[self::ORIGINE]));
-        $data->setVille($this->string($row[self::VILLE]));
-        $data->setAnneeDebut($this->yearToDateTime($row[self::ANNEE_DEBUT]));
-        $data->setAnneeSeparation($this->yearToDateTime($row[self::ANNEE_SEPARATION]));
-        $data->setFondateurs($this->string($row[self::FONDATEURS]));
-        $data->setMembres($this->integer($row[self::MEMBRES]));
-        $data->setCourantMusical($this->string($row[self::COURANT_MUSICAL]));
-        $data->setPresentation($this->string($row[self::PRESENTATION]));
+        /** @var Data $data */
+        $data = $this->denormalizer->denormalize($row, Data::class);
 
         $this->dataRepository->add($data, true);
-    }
-
-    private function string(?string $value): ?string
-    {
-        $value = htmlentities($value, null, 'utf-8');
-        $value = str_replace("&nbsp;", ' ', $value);
-        $value = html_entity_decode($value);
-
-        return trim($value) ?? null;
-    }
-
-    private function integer(?string $value): ?int
-    {
-        return (int)trim($value) ?? null;
-    }
-
-    private function yearToDateTime(?string $year): ?\DateTimeImmutable
-    {
-        $year = trim($year);
-
-        return $year ? \DateTimeImmutable::createFromFormat('Y', $year) : null;
     }
 }
