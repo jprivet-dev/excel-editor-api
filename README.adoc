@@ -242,7 +242,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 class ExceptionSubscriber implements EventSubscriberInterface
 {
-    public function __construct(readonly SerializerInterface $serializer)
+    public function __construct(private SerializerInterface $serializer)
     {
     }
 
