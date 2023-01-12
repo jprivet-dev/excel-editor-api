@@ -40,7 +40,7 @@ endif::[]
 :git_ssh_current: {git_ssh_api}
 
 // Releases
-:project_release: v0.0.0-beta.2
+:project_release: v0.0.0-beta.3
 :php_release: 8.2.0
 :php_release_underscore: 8_2_0
 :symfony_release: v6.1.10
