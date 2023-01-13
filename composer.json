@@ -89,6 +89,7 @@
         }
     },
     "require-dev": {
+        "doctrine/doctrine-fixtures-bundle": "^3.4",
         "phpmd/phpmd": "^2.13",
         "squizlabs/php_codesniffer": "3.*",
         "symfony/maker-bundle": "^1.45"
