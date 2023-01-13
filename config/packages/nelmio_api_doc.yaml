@@ -1,8 +1,8 @@
 nelmio_api_doc:
     documentation:
         info:
-            title: My App
-            description: This is an awesome app!
+            title: Excel Editor (API with Symfony)
+            description: Study of an API (Symfony) and a SPA (Angular), to load data in CSV/Excel format, with consultation and modification of this data online.
             version: 1.0.0
     areas: # to filter documented areas
         path_patterns:
