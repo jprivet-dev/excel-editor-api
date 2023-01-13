@@ -4,6 +4,52 @@ nelmio_api_doc:
             title: Excel Editor (API with Symfony)
             description: Study of an API (Symfony) and a SPA (Angular), to load data in CSV/Excel format, with consultation and modification of this data online.
             version: 1.0.0
+        components:
+            securitySchemes:
+                Bearer:
+                    type: http
+                    scheme: bearer
+                    bearerFormat: JWT
+            schemas:
+                Credentials:
+                    type: object
+                    properties:
+                        username:
+                            type: string
+                            example: user@email.com
+                        password:
+                            type: string
+                            example: password
+                Token:
+                    type: object
+                    properties:
+                        token:
+                            type: string
+                            readOnly: true
+        security:
+            - Bearer: []
+        paths:
+            /api/login_check:
+                post:
+                    tags:
+                        - Token
+                    summary: Allows to get the JWT token to log in.
+                    requestBody:
+                        description: Generate a new JWT token.
+                        content:
+                            application/json:
+                                schema:
+                                    $ref: '#/components/schemas/Credentials'
+                    responses:
+                        '200':
+                            description: Login successful, return a JWT token.
+                            content:
+                                application/json:
+                                    schema:
+                                        type: object
+                                        properties:
+                                            token:
+                                                type: string
     areas: # to filter documented areas
         path_patterns:
             - ^/api(?!/doc$) # Accepts routes under /api except /api/doc

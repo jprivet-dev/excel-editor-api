@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Data;
 use App\Repository\DataRepository;
+use OpenApi\Attributes as OA;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -17,9 +18,11 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[Route('/api/data')]
+#[OA\Tag(name: 'Data (music groups)')]
 class DataController extends AbstractController
 {
     #[Route('', name: 'api_data_list', methods: ['GET'])]
+    #[OA\Get(summary: 'Return all music groups.')]
     public function list(DataRepository $dataRepository): JsonResponse
     {
         return $this->json($dataRepository->findAll());
@@ -27,6 +30,7 @@ class DataController extends AbstractController
 
     #[Route('', name: 'api_data_create', methods: ['POST'])]
     #[IsGranted('ROLE_ADMIN', message: 'You do not have sufficient rights to create a music group.')]
+    #[OA\Post(summary: 'Create a new music group.')]
     public function create(
         Request $request,
         DataRepository $dataRepository,
@@ -54,6 +58,7 @@ class DataController extends AbstractController
     }
 
     #[Route('/{id}', name: 'api_data_read', methods: ['GET'])]
+    #[OA\Get(summary: 'Read a music group.')]
     public function read(Data $data): JsonResponse
     {
         return $this->json($data);
@@ -61,6 +66,7 @@ class DataController extends AbstractController
 
     #[Route('/{id}', name: 'api_data_update', methods: ['PATCH'])]
     #[IsGranted('ROLE_ADMIN', message: 'You do not have sufficient rights to update a music group.')]
+    #[OA\Patch(summary: 'Update a music group.')]
     public function update(
         Request $request,
         Data $data,
@@ -81,6 +87,7 @@ class DataController extends AbstractController
 
     #[Route('/{id}', name: 'api_data_delete', methods: ['DELETE'])]
     #[IsGranted('ROLE_ADMIN', message: 'You do not have sufficient rights to delete a music group.')]
+    #[OA\Delete(summary: 'Delete a music group.')]
     public function delete(Data $data, DataRepository $dataRepository): JsonResponse
     {
         $dataRepository->remove($data, true);
