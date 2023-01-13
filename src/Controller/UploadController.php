@@ -30,7 +30,7 @@ class UploadController extends AbstractController
     ): JsonResponse {
         $requestFile = $request->files->get('file');
 
-        $form = $this->createForm(FileUploadType::class);
+        $form = $this->createForm(FileUploadType::class, options: ['csrf_protection' => false]);
 
         $form->submit([
             'file' => $requestFile,
@@ -40,7 +40,7 @@ class UploadController extends AbstractController
             $uploadedFile = $form->get('file')->getData();
 
             if (!$uploadedFile) {
-                throw new InvalidArgumentException('file field does not empty.');
+                throw new InvalidArgumentException("'file' field does not empty.");
             }
 
             $file = $fileUpload->save($uploadedFile);
