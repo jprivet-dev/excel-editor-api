@@ -103,6 +103,14 @@ NOTE: `$ make` to see all available commands.
 
 {back_to_top}
 
+== API documentation with Nelmio
+
+NOTE: This project use https://github.com/nelmio/NelmioApiDocBundle
+
+Go on https://localhost/api/doc to see the API documentation.
+
+{back_to_top}
+
 == Docker environments
 
 When you run `$ docker compose up` it reads the overrides automatically (`docker-compose.yml` and `docker-compose.override.yml`).
