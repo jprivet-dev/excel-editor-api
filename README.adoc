@@ -109,6 +109,8 @@ NOTE: This project use https://github.com/nelmio/NelmioApiDocBundle
 
 Go on https://localhost/api/doc to see the API documentation.
 
+image::doc/img/nelmio-api-doc.png[]
+
 {back_to_top}
 
 == Docker environments
