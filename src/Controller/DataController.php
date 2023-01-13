@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Data;
 use App\Repository\DataRepository;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,6 +26,7 @@ class DataController extends AbstractController
     }
 
     #[Route('', name: 'api_data_create', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN', message: 'You do not have sufficient rights to create a music group.')]
     public function create(
         Request $request,
         DataRepository $dataRepository,
@@ -58,6 +60,7 @@ class DataController extends AbstractController
     }
 
     #[Route('/{id}', name: 'api_data_update', methods: ['PATCH'])]
+    #[IsGranted('ROLE_ADMIN', message: 'You do not have sufficient rights to update a music group.')]
     public function update(
         Request $request,
         Data $data,
@@ -77,6 +80,7 @@ class DataController extends AbstractController
     }
 
     #[Route('/{id}', name: 'api_data_delete', methods: ['DELETE'])]
+    #[IsGranted('ROLE_ADMIN', message: 'You do not have sufficient rights to delete a music group.')]
     public function delete(Data $data, DataRepository $dataRepository): JsonResponse
     {
         $dataRepository->remove($data, true);

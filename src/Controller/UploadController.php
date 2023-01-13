@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Form\FileUploadType;
 use App\Service\FileUploadService;
 use App\Service\DataImportService;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Exception\InvalidArgumentException;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -17,6 +18,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 class UploadController extends AbstractController
 {
     #[Route('', name: 'api_upload', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN', message: 'You do not have sufficient rights to upload a file.')]
     public function upload(
         Request $request,
         FileUploadService $fileUpload,
