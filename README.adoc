@@ -93,8 +93,9 @@ $ docker compose build --pull --no-cache
 
 . `$ git clone {git_ssh_current}`.
 . `$ cd {git_project_current}`.
-. `$ make build`: Build the first time or rebuild fresh images if necessary.
-. `$ make start`: (up) Create and start containers.
+. `$ make build`: Build (the first time) or rebuild fresh images if necessary.
+. `$ make start`: Create and start containers (alias of `$ make up`).
+. `$ make generate_keypair`: (the first time) Generate the SSL keys for the JWT authentication.
 . Open https://localhost and https://stackoverflow.com/a/15076602/1352334[accept the auto-generated TLS certificate].
 . `$ make stop`: (down) Stop and remove containers, networks.
 
