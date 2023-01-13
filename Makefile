@@ -194,6 +194,16 @@ phpmd: ## Run PHP Mess Detector on `src` folder by default. Pass the parameter "
 	@$(eval c ?= $(FOLDERS))
 	$(PHP_CONT) ./vendor/bin/phpmd $(c) ansi phpmd.xml
 
+## — JWT & OPENSSL 🔒️ —————————————————————————————————————————————————————————
+
+.PHONY: openssl_version
+openssl_version: ## Get the OpenSSL version
+	$(PHP_CONT) openssl version
+
+.PHONY: generate_keypair
+generate_keypair: ## Generate the SSL keys (private.pem & public.pem) with lexik, for the JWT authentication
+	$(SYMFONY) lexik:jwt:generate-keypair
+
 ## — TROUBLESHOOTING 😵‍️ ———————————————————————————————————————————————————————
 
 .PHONY: permissions
