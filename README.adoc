@@ -207,6 +207,22 @@ TIP: In *Custom rulesets*, click on *+* and choose the `phpmd.xml` file of this 
 
 {back_to_top}
 
+=== PHP Unit associated with a PHP interpreter
+
+==== Configuration
+
+NOTE: See https://www.jetbrains.com/help/phpstorm/using-phpunit-framework.html#configure-phpunit-manually
+
+image::doc/img/phpstorm-settings-phpunit.png[]
+
+==== Run PHPUnit tests automatically
+
+On the *Test Runner tab*, press on *Toggle auto-test* on the toolbar:
+
+image::doc/img/phpstorm-settings-phpunit-toggle-auto-test.png[]
+
+{back_to_top}
+
 == Style Guide
 
 === JSON naming convention
