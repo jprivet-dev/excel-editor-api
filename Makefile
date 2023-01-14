@@ -169,8 +169,8 @@ schema_validate: ## Validate the mappings
 mapping_info: ## List mapped entities
 	$(SYMFONY) doctrine:mapping:info
 
-.PHONY: fixtures_load
-fixtures_load: ## Load fixtures
+.PHONY: fixtures
+fixtures: ## Load fixtures
 	$(SYMFONY) doctrine:fixtures:load
 
 ## — TEST & QUALITY ✅ ————————————————————————————————————————————————————————
