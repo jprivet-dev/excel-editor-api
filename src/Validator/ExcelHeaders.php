@@ -5,6 +5,7 @@ namespace App\Validator;
 use Symfony\Component\Validator\Constraint;
 
 /**
+ * TODO: check if necessary to use Attribute
  * @Annotation
  *
  * @Target({"PROPERTY", "METHOD", "ANNOTATION"})

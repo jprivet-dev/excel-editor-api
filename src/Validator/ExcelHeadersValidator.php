@@ -9,7 +9,7 @@ class ExcelHeadersValidator extends ConstraintValidator
 {
     public function validate($value, Constraint $constraint)
     {
-        /* @var App\Validator\ExcelHeaders $constraint */
+        /* @var ExcelHeaders $constraint */
 
         if (null === $value || '' === $value) {
             return;
