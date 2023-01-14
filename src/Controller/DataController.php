@@ -25,7 +25,7 @@ class DataController extends AbstractController
     #[OA\Get(summary: 'Return all music groups.')]
     public function list(DataRepository $dataRepository): JsonResponse
     {
-        return $this->json($dataRepository->findAll());
+        return $this->json($dataRepository->findAll(), context: ['groups' => 'getDataList']);
     }
 
     #[Route('', name: 'api_data_create', methods: ['POST'])]
