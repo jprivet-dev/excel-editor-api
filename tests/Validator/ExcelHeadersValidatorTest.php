@@ -17,9 +17,9 @@ class ExcelHeadersValidatorTest extends ConstraintValidatorTestCase
         parent::setUp();
 
         $this->headers = new ExcelHeadersModel([
-            'COLUMN_1',
-            'COLUMN_2',
-            'COLUMN_3',
+            'HEADER_1',
+            'HEADER_2',
+            'HEADER_3',
         ]);
     }
 
@@ -51,10 +51,10 @@ class ExcelHeadersValidatorTest extends ConstraintValidatorTestCase
 
     public function testHeadersAreValid()
     {
-        $this->headers->setColumns([
-            'COLUMN_1',
-            'COLUMN_2',
-            'COLUMN_3',
+        $this->headers->setHeaders([
+            'HEADER_1',
+            'HEADER_2',
+            'HEADER_3',
         ]);
 
         $this->validator->validate($this->headers, new ExcelHeaders());
@@ -62,51 +62,51 @@ class ExcelHeadersValidatorTest extends ConstraintValidatorTestCase
         $this->assertNoViolation();
     }
 
-    public function testExcessColumns()
+    public function testExcessHeaders()
     {
-        $this->headers->setColumns([
-            'COLUMN_1',
-            'COLUMN_2',
-            'COLUMN_3',
-            '__EXCESS_COLUMN__',
+        $this->headers->setHeaders([
+            'HEADER_1',
+            'HEADER_2',
+            'HEADER_3',
+            '__EXCESS_HEADER__',
         ]);
 
         $constrain = new ExcelHeaders();
         $this->validator->validate($this->headers, $constrain);
 
         $this->buildViolation($constrain->excessMessage)
-            ->setParameter('{{ columns }}', '"__EXCESS_COLUMN__"')
+            ->setParameter('{{ headers }}', '"__EXCESS_HEADER__"')
             ->assertRaised();
     }
 
-    public function testMissingColumns()
+    public function testMissingHeaders()
     {
-        $this->headers->setColumns([
-            'COLUMN_1',
-            'COLUMN_2',
+        $this->headers->setHeaders([
+            'HEADER_1',
+            'HEADER_2',
         ]);
 
         $constrain = new ExcelHeaders();
         $this->validator->validate($this->headers, $constrain);
 
         $this->buildViolation($constrain->missingMessage)
-            ->setParameter('{{ columns }}', '"COLUMN_3"')
+            ->setParameter('{{ headers }}', '"HEADER_3"')
             ->assertRaised();
     }
 
-    public function testNotOrderingColumns()
+    public function testNotOrderingHeaders()
     {
-        $this->headers->setColumns([
-            'COLUMN_1',
-            'COLUMN_3',
-            'COLUMN_2',
+        $this->headers->setHeaders([
+            'HEADER_1',
+            'HEADER_3',
+            'HEADER_2',
         ]);
 
         $constrain = new ExcelHeaders();
         $this->validator->validate($this->headers, $constrain);
 
         $this->buildViolation($constrain->notOrderedMessage)
-            ->setParameter('{{ columns }}', '"COLUMN_3", "COLUMN_2"')
+            ->setParameter('{{ headers }}', '"HEADER_3", "HEADER_2"')
             ->assertRaised();
     }
 }

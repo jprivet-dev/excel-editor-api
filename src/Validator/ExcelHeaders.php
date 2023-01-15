@@ -7,7 +7,7 @@ use Symfony\Component\Validator\Constraint;
 class ExcelHeaders extends Constraint
 {
     public string $message = 'This is not a valid headers.';
-    public string $excessMessage = 'Columns are in excess [{{ columns }}].';
-    public string $missingMessage = 'Columns are missing [{{ columns }}].';
-    public string $notOrderedMessage = 'The columns are not in the right order [{{ columns }}].';
+    public string $excessMessage = 'Headers are in excess [{{ headers }}].';
+    public string $missingMessage = 'Headers are missing [{{ headers }}].';
+    public string $notOrderedMessage = 'The headers are not in the right order [{{ headers }}].';
 }

@@ -26,56 +26,56 @@ class ExcelHeadersValidator extends ConstraintValidator
             throw new UnexpectedValueException($value, ExcelHeadersModel::class);
         }
 
-        $excess = $this->excessColumns($value);
+        $excess = $this->excessHeaders($value);
 
         if (count($excess)) {
             $this->context->buildViolation($constraint->excessMessage)
-                ->setParameter('{{ columns }}', $this->formatValues($excess))
+                ->setParameter('{{ headers }}', $this->formatValues($excess))
                 ->addViolation();
 
             return;
         }
 
-        $missing = $this->missingColumns($value);
+        $missing = $this->missingHeaders($value);
 
         if (count($missing)) {
             $this->context->buildViolation($constraint->missingMessage)
-                ->setParameter('{{ columns }}', $this->formatValues($missing))
+                ->setParameter('{{ headers }}', $this->formatValues($missing))
                 ->addViolation();
 
             return;
         }
 
-        $notOrdered = $this->notOrderedColumns($value);
+        $notOrdered = $this->notOrderedHeaders($value);
 
         if (count($notOrdered)) {
             $this->context->buildViolation($constraint->notOrderedMessage)
-                ->setParameter('{{ columns }}', $this->formatValues($notOrdered))
+                ->setParameter('{{ headers }}', $this->formatValues($notOrdered))
                 ->addViolation();
         }
     }
 
-    protected function excessColumns(ExcelHeadersModel $headers): array
+    protected function excessHeaders(ExcelHeadersModel $headers): array
     {
         return array_diff(
-            $headers->getColumns(),
-            $headers->getExpectedColumns()
+            $headers->getHeaders(),
+            $headers->getExpectedHeaders()
         );
     }
 
-    protected function missingColumns(ExcelHeadersModel $headers): array
+    protected function missingHeaders(ExcelHeadersModel $headers): array
     {
         return array_diff(
-            $headers->getExpectedColumns(),
-            $headers->getColumns()
+            $headers->getExpectedHeaders(),
+            $headers->getHeaders()
         );
     }
 
-    protected function notOrderedColumns(ExcelHeadersModel $headers): array
+    protected function notOrderedHeaders(ExcelHeadersModel $headers): array
     {
         return array_diff_assoc(
-            $headers->getColumns(),
-            $headers->getExpectedColumns()
+            $headers->getHeaders(),
+            $headers->getExpectedHeaders()
         );
     }
 

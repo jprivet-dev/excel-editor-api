@@ -14,7 +14,7 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 class DataImportService
 {
     /**
-     * Expected columns in the file to be imported.
+     * Expected headers in the file to be imported.
      */
     private $headersMapping = [
         'Nom du groupe' => 'nomDuGroupe',
@@ -40,8 +40,8 @@ class DataImportService
         private DenormalizerInterface $denormalizer,
         private ExcelHeadersValidator $validator,
     ) {
-        $expectedColumns = array_values($this->headersMapping);
-        $this->headers->setColumns($expectedColumns);
+        $expectedHeaders = array_values($this->headersMapping);
+        $this->headers->setHeaders($expectedHeaders);
     }
 
     public function import(FileUpload $file): array
