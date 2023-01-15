@@ -2,6 +2,7 @@
 
 namespace App\Tests\Validator;
 
+use App\Model\ExcelHeadersModel;
 use App\Validator\ExcelHeaders;
 use App\Validator\ExcelHeadersValidator;
 use Symfony\Component\Validator\Exception\UnexpectedValueException;
@@ -9,6 +10,19 @@ use Symfony\Component\Validator\Test\ConstraintValidatorTestCase;
 
 class ExcelHeadersValidatorTest extends ConstraintValidatorTestCase
 {
+    private ExcelHeadersModel $headers;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->headers = new ExcelHeadersModel([
+            'COLUMN_1',
+            'COLUMN_2',
+            'COLUMN_3',
+        ]);
+    }
+
     protected function createValidator()
     {
         return new ExcelHeadersValidator();
@@ -35,90 +49,64 @@ class ExcelHeadersValidatorTest extends ConstraintValidatorTestCase
         $this->validator->validate(new \stdClass(), new ExcelHeaders());
     }
 
-
     public function testHeadersAreValid()
     {
-        $value = [
-            'Nom du groupe',
-            'Origine',
-            'Ville',
-            'Année début',
-            'Année séparation',
-            'Fondateurs',
-            'Membres',
-            'Courant musical',
-            'Présentation',
-        ];
+        $this->headers->setColumns([
+            'COLUMN_1',
+            'COLUMN_2',
+            'COLUMN_3',
+        ]);
 
-        $this->validator->validate($value, new ExcelHeaders());
+        $this->validator->validate($this->headers, new ExcelHeaders());
 
         $this->assertNoViolation();
     }
 
-    public function testNotAllowedColumns()
+    public function testExcessColumns()
     {
-        $value = [
-            'Nom du groupe',
-            'Origine',
-            'Ville',
-            'Année début',
-            'Année séparation',
-            'Fondateurs',
-            'Membres',
-            'Courant musical',
-            'Présentation',
-            '__NOT_ALLOWED__',
-        ];
+        $this->headers->setColumns([
+            'COLUMN_1',
+            'COLUMN_2',
+            'COLUMN_3',
+            '__EXCESS_COLUMN__',
+        ]);
 
         $constrain = new ExcelHeaders();
-        $this->validator->validate($value, $constrain);
+        $this->validator->validate($this->headers, $constrain);
 
         $this->buildViolation($constrain->excessMessage)
-            ->setParameter('{{ columns }}', '"__NOT_ALLOWED__"')
+            ->setParameter('{{ columns }}', '"__EXCESS_COLUMN__"')
             ->assertRaised();
     }
 
-    public function testMandatoryColumns()
+    public function testMissingColumns()
     {
-        $value = [
-            'Nom du groupe',
-            'Origine',
-            'Ville',
-            'Année début',
-            'Année séparation',
-            'Fondateurs',
-            'Membres',
-            'Courant musical',
-        ];
+        $this->headers->setColumns([
+            'COLUMN_1',
+            'COLUMN_2',
+        ]);
 
         $constrain = new ExcelHeaders();
-        $this->validator->validate($value, $constrain);
+        $this->validator->validate($this->headers, $constrain);
 
         $this->buildViolation($constrain->missingMessage)
-            ->setParameter('{{ columns }}', '"Présentation"')
+            ->setParameter('{{ columns }}', '"COLUMN_3"')
             ->assertRaised();
     }
 
     public function testNotOrderingColumns()
     {
-        $value = [
-            'Nom du groupe',
-            'Origine',
-            'Ville',
-            'Année début',
-            'Année séparation',
-            'Fondateurs',
-            'Membres',
-            'Présentation',
-            'Courant musical',
-        ];
+        $this->headers->setColumns([
+            'COLUMN_1',
+            'COLUMN_3',
+            'COLUMN_2',
+        ]);
 
         $constrain = new ExcelHeaders();
-        $this->validator->validate($value, $constrain);
+        $this->validator->validate($this->headers, $constrain);
 
-        $parameter = implode(', ', ['"Présentation"', '"Courant musical"',]);
         $this->buildViolation($constrain->notOrderedMessage)
-            ->setParameter('{{ columns }}', $parameter)
+            ->setParameter('{{ columns }}', '"COLUMN_3", "COLUMN_2"')
             ->assertRaised();
     }
 }

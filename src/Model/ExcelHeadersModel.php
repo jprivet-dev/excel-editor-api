@@ -6,23 +6,33 @@ namespace App\Model;
 
 final class ExcelHeadersModel
 {
-    public function __construct(protected array $headers, protected array $expectedheaders)
+    private array $columns;
+
+    public function __construct(protected array $expectedColumns)
     {
     }
 
     /**
      * @return array
      */
-    public function getHeaders(): array
+    public function getColumns(): array
     {
-        return $this->headers;
+        return $this->columns;
+    }
+
+    /**
+     * @param array $columns
+     */
+    public function setColumns(array $columns): void
+    {
+        $this->columns = $columns;
     }
 
     /**
      * @return array
      */
-    public function getExpectedheaders(): array
+    public function getExpectedColumns(): array
     {
-        return $this->expectedheaders;
+        return $this->expectedColumns;
     }
 }

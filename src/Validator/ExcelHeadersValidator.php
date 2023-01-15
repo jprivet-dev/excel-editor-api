@@ -2,6 +2,7 @@
 
 namespace App\Validator;
 
+use App\Model\ExcelHeadersModel;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
@@ -9,18 +10,6 @@ use Symfony\Component\Validator\Exception\UnexpectedValueException;
 
 class ExcelHeadersValidator extends ConstraintValidator
 {
-    private $expectedHeaders = [
-        'Nom du groupe',
-        'Origine',
-        'Ville',
-        'Année début',
-        'Année séparation',
-        'Fondateurs',
-        'Membres',
-        'Courant musical',
-        'Présentation',
-    ];
-
     public function validate($value, Constraint $constraint)
     {
         if (!$constraint instanceof ExcelHeaders) {
@@ -33,14 +22,13 @@ class ExcelHeadersValidator extends ConstraintValidator
             return;
         }
 
-        if (!\is_array($value)) {
-            throw new UnexpectedValueException($value, 'array');
+        if (!$value instanceof ExcelHeadersModel) {
+            throw new UnexpectedValueException($value, ExcelHeadersModel::class);
         }
 
-        $excess = $this->excessColumns($value, $this->expectedHeaders);
-        $excessCount = count($excess);
+        $excess = $this->excessColumns($value);
 
-        if ($excessCount) {
+        if (count($excess)) {
             $this->context->buildViolation($constraint->excessMessage)
                 ->setParameter('{{ columns }}', $this->formatValues($excess))
                 ->addViolation();
@@ -48,10 +36,9 @@ class ExcelHeadersValidator extends ConstraintValidator
             return;
         }
 
-        $missing = $this->missingColumns($value, $this->expectedHeaders);
-        $missingCount = count($missing);
+        $missing = $this->missingColumns($value);
 
-        if ($missingCount) {
+        if (count($missing)) {
             $this->context->buildViolation($constraint->missingMessage)
                 ->setParameter('{{ columns }}', $this->formatValues($missing))
                 ->addViolation();
@@ -59,7 +46,7 @@ class ExcelHeadersValidator extends ConstraintValidator
             return;
         }
 
-        $notOrdered = $this->notOrderedColumns($value, $this->expectedHeaders);
+        $notOrdered = $this->notOrderedColumns($value);
 
         if (count($notOrdered)) {
             $this->context->buildViolation($constraint->notOrderedMessage)
@@ -68,19 +55,28 @@ class ExcelHeadersValidator extends ConstraintValidator
         }
     }
 
-    protected function excessColumns(array $columns, array $expectedColumns): array
+    protected function excessColumns(ExcelHeadersModel $headers): array
     {
-        return array_diff($columns, $expectedColumns);
+        return array_diff(
+            $headers->getColumns(),
+            $headers->getExpectedColumns()
+        );
     }
 
-    protected function missingColumns(array $columns, array $expectedColumns): array
+    protected function missingColumns(ExcelHeadersModel $headers): array
     {
-        return array_diff($expectedColumns, $columns);
+        return array_diff(
+            $headers->getExpectedColumns(),
+            $headers->getColumns()
+        );
     }
 
-    protected function notOrderedColumns(array $columns, array $expectedColumns): array
+    protected function notOrderedColumns(ExcelHeadersModel $headers): array
     {
-        return array_diff_assoc($columns, $expectedColumns);
+        return array_diff_assoc(
+            $headers->getColumns(),
+            $headers->getExpectedColumns()
+        );
     }
 
 }
