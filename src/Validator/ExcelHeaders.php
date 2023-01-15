@@ -4,18 +4,10 @@ namespace App\Validator;
 
 use Symfony\Component\Validator\Constraint;
 
-/**
- * TODO: check if necessary to use Attribute
- * @Annotation
- *
- * @Target({"PROPERTY", "METHOD", "ANNOTATION"})
- */
-#[\Attribute(\Attribute::TARGET_PROPERTY | \Attribute::TARGET_METHOD | \Attribute::IS_REPEATABLE)]
 class ExcelHeaders extends Constraint
 {
-    /*
-     * Any public properties become valid options for the annotation.
-     * Then, use these in your validator class.
-     */
-    public $message = 'The value "{{ value }}" is not valid.';
+    public string $message = 'This is not a valid headers.';
+    public string $excessMessage = 'Columns are in excess [{{ columns }}].';
+    public string $missingMessage = 'Columns are missing [{{ columns }}].';
+    public string $notOrderedMessage = 'The columns are not in the right order [{{ columns }}].';
 }
