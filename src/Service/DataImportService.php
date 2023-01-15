@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Entity\Data;
 use App\Entity\FileUpload;
+use App\Model\ExcelHeadersModel;
 use App\Repository\DataRepository;
 use App\Validator\ExcelHeaders;
 use App\Validator\ExcelHeadersValidator;
@@ -27,6 +28,8 @@ class DataImportService
         'Présentation' => 'presentation',
     ];
 
+    private ExcelHeadersModel $headers;
+
     private $stats = [
         'alreadyExistsCount' => 0,
     ];
@@ -37,6 +40,8 @@ class DataImportService
         private DenormalizerInterface $denormalizer,
         private ExcelHeadersValidator $validator,
     ) {
+        $expectedColumns = array_values($this->headersMapping);
+        $this->headers->setColumns($expectedColumns);
     }
 
     public function import(FileUpload $file): array
@@ -46,8 +51,8 @@ class DataImportService
         $reader = SimpleExcelReader::create($path);
 
         $reader->useHeaders(array_values($this->headersMapping));
-        // BUG: $reader->getHeaders() & $reader->getOriginalHeaders() can only
-        // be called once before validateOriginalHeaders().
+        // BUG with the cache: $reader->getHeaders() & $reader->getOriginalHeaders()
+        // can only be called once before validateOriginalHeaders().
         $this->validator->validate($reader->getOriginalHeaders(), new ExcelHeaders());
 
         $reader->getRows()->each(function (array $row) {
