@@ -12,7 +12,8 @@ final class DataImportStats
     private array $imported = [];
     private array $alreadyExist = [];
 
-    public function setFile(FileUpload $file): void {
+    public function setFile(FileUpload $file): void
+    {
         $this->file = $file;
     }
 

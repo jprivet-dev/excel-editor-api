@@ -50,6 +50,4 @@ class FileUpload
     {
         return sprintf('%s/%s', $this->uploadsDirectory, $this->filename);
     }
-
-
 }
