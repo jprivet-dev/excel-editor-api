@@ -176,8 +176,9 @@ fixtures: ## Load fixtures
 ## — TEST & QUALITY ✅ ————————————————————————————————————————————————————————
 
 .PHONY: test
-test: ## Run PHPUnit
-	$(PHP) bin/phpunit
+test: ## Run PHPUnit. Pass the parameter "c=" to run a given command (example: make test c=tests/Service/DataImportServiceTest.php)
+	@$(eval c ?=)
+	$(PHP) bin/phpunit $(c)
 
 .PHONY: phpcs
 phpcs: ## Run PHP CS (PHP_CodeSniffer). Pass the parameter "c=" to run a given command (example: make phpcs c=src/Kernel.php)
