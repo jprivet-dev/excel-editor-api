@@ -4,9 +4,8 @@ namespace App\Service;
 
 use App\Entity\Data;
 use App\Entity\FileUpload;
-use App\Model\ExcelHeadersModel;
 use App\Repository\DataRepository;
-use App\Validator\ExcelHeaders;
+use App\Validator\DataTableHeaders;
 use Spatie\SimpleExcel\SimpleExcelReader;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
@@ -14,8 +13,6 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class DataImportService
 {
-    private ExcelHeadersModel $headers;
-
     /**
      * Expected headers in the file to be imported.
      */
@@ -31,9 +28,6 @@ class DataImportService
         'Présentation' => 'presentation',
     ];
 
-    private array $headersOriginal;
-    private array $headersCamelCase;
-
     private array $stats = [
         'alreadyExistsCount' => 0,
     ];
@@ -44,25 +38,24 @@ class DataImportService
         readonly DenormalizerInterface $denormalizer,
         readonly ValidatorInterface $validator,
     ) {
-        $this->headersOriginal = array_keys($this->headersMapping);
-        $this->headersCamelCase = array_values($this->headersMapping);
-        $this->headers = new ExcelHeadersModel($this->headersOriginal);
     }
 
+    /**
+     * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
+     */
     public function import(FileUpload $file): array
     {
         $this->stats['alreadyExistsCount'] = 0;
-        $path = sprintf('%s/%s', $this->uploadsDirectory, $file->getFilename());
-        $reader = SimpleExcelReader::create($path);
+        $reader = $this->createReader($file);
 
-        $reader->useHeaders($this->headersCamelCase);
         // BUG with the cache: $reader->getHeaders() & $reader->getOriginalHeaders()
-        // can only be called once before validateOriginalHeaders().
-        $this->headers->setHeaders($reader->getOriginalHeaders());
+        // can only be called once before validate the headers.
+        $expectedheaders = array_keys($this->headersMapping);
+        $headers = $reader->getOriginalHeaders();
 
-        $violations = $this->validator->validate($this->headers, new ExcelHeaders());
+        $violations = $this->validator->validate($headers, new DataTableHeaders($expectedheaders));
         if (\count($violations)) {
-            throw new ValidationFailedException($this->headers, $violations);
+            throw new ValidationFailedException($headers, $violations);
         }
 
         $reader->getRows()->each(function (array $row) {
@@ -82,6 +75,18 @@ class DataImportService
         return $this->stats;
     }
 
+    private function createReader(FileUpload $file): SimpleExcelReader
+    {
+        $path = sprintf('%s/%s', $this->uploadsDirectory, $file->getFilename());
+        $reader = new SimpleExcelReader($path);
+        $reader->useHeaders(array_values($this->headersMapping)); // Headers in camel case
+
+        return $reader;
+    }
+
+    /**
+     * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
+     */
     private function add(array $row): void
     {
         /** @var Data $data */
