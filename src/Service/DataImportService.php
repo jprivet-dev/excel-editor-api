@@ -7,9 +7,10 @@ use App\Entity\FileUpload;
 use App\Model\ExcelHeadersModel;
 use App\Repository\DataRepository;
 use App\Validator\ExcelHeaders;
-use App\Validator\ExcelHeadersValidator;
 use Spatie\SimpleExcel\SimpleExcelReader;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use Symfony\Component\Validator\Exception\ValidationFailedException;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class DataImportService
 {
@@ -41,11 +42,10 @@ class DataImportService
         readonly string $uploadsDirectory,
         readonly DataRepository $dataRepository,
         readonly DenormalizerInterface $denormalizer,
-        readonly ExcelHeadersValidator $validator,
+        readonly ValidatorInterface $validator,
     ) {
         $this->headersOriginal = array_keys($this->headersMapping);
         $this->headersCamelCase = array_values($this->headersMapping);
-
         $this->headers = new ExcelHeadersModel($this->headersOriginal);
     }
 
@@ -59,14 +59,18 @@ class DataImportService
         // BUG with the cache: $reader->getHeaders() & $reader->getOriginalHeaders()
         // can only be called once before validateOriginalHeaders().
         $this->headers->setHeaders($reader->getOriginalHeaders());
-        $this->validator->validate($this->headers, new ExcelHeaders());
+
+        $violations = $this->validator->validate($this->headers, new ExcelHeaders());
+        if (\count($violations)) {
+            throw new ValidationFailedException($this->headers, $violations);
+        }
 
         $reader->getRows()->each(function (array $row) {
             $result = $this->dataRepository->findBy([
                 'nomDuGroupe' => $row['nomDuGroupe'],
             ]);
 
-            if (count($result) > 0) {
+            if (\count($result) > 0) {
                 $this->stats['alreadyExistsCount']++;
 
                 return;
