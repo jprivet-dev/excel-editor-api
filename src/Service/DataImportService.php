@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Entity\Data;
 use App\Entity\FileUpload;
+use App\Model\DataTableHeadersMapping;
 use App\Repository\DataRepository;
 use App\Validator\DataTableHeaders;
 use Spatie\SimpleExcel\SimpleExcelReader;
@@ -13,20 +14,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class DataImportService
 {
-    /**
-     * Expected headers in the file to be imported.
-     */
-    private array $headersMapping = [
-        'Nom du groupe' => 'nomDuGroupe',
-        'Origine' => 'origine',
-        'Ville' => 'ville',
-        'Année début' => 'anneeDebut',
-        'Année séparation' => 'anneeSeparation',
-        'Fondateurs' => 'fondateurs',
-        'Membres' => 'membres',
-        'Courant musical' => 'courantMusical',
-        'Présentation' => 'presentation',
-    ];
+    private DataTableHeadersMapping $headersMapping;
 
     private array $stats = [
         'alreadyExistsCount' => 0,
@@ -38,6 +26,7 @@ class DataImportService
         readonly DenormalizerInterface $denormalizer,
         readonly ValidatorInterface $validator,
     ) {
+        $this->headersMapping = new DataTableHeadersMapping();
     }
 
     /**
@@ -50,10 +39,13 @@ class DataImportService
 
         // BUG with the cache: $reader->getHeaders() & $reader->getOriginalHeaders()
         // can only be called once before validate the headers.
-        $expectedheaders = array_keys($this->headersMapping);
         $headers = $reader->getOriginalHeaders();
 
-        $violations = $this->validator->validate($headers, new DataTableHeaders($expectedheaders));
+        $violations = $this->validator->validate(
+            $headers,
+            new DataTableHeaders($this->headersMapping->getExpectedHeaders())
+        );
+
         if (\count($violations)) {
             throw new ValidationFailedException($headers, $violations);
         }
@@ -79,7 +71,7 @@ class DataImportService
     {
         $path = sprintf('%s/%s', $this->uploadsDirectory, $file->getFilename());
         $reader = new SimpleExcelReader($path);
-        $reader->useHeaders(array_values($this->headersMapping)); // Headers in camel case
+        $reader->useHeaders($this->headersMapping->getCamelCaseHeaders());
 
         return $reader;
     }
