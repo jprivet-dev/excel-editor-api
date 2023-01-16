@@ -28,7 +28,7 @@ class ExcelHeadersValidator extends ConstraintValidator
 
         $excess = $this->excessHeaders($value);
 
-        if (count($excess)) {
+        if (\count($excess)) {
             $this->context->buildViolation($constraint->excessMessage)
                 ->setParameter('{{ headers }}', $this->formatValues($excess))
                 ->addViolation();
@@ -38,7 +38,7 @@ class ExcelHeadersValidator extends ConstraintValidator
 
         $missing = $this->missingHeaders($value);
 
-        if (count($missing)) {
+        if (\count($missing)) {
             $this->context->buildViolation($constraint->missingMessage)
                 ->setParameter('{{ headers }}', $this->formatValues($missing))
                 ->addViolation();
@@ -48,7 +48,7 @@ class ExcelHeadersValidator extends ConstraintValidator
 
         $notOrdered = $this->notOrderedHeaders($value);
 
-        if (count($notOrdered)) {
+        if (\count($notOrdered)) {
             $this->context->buildViolation($constraint->notOrderedMessage)
                 ->setParameter('{{ headers }}', $this->formatValues($notOrdered))
                 ->addViolation();
