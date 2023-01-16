@@ -13,9 +13,15 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class DataImportServiceTest extends TestCase
 {
-    public function testValidFile(): void
-    {
-        $linesCount = 9;
+    /**
+     * @dataProvider provideParams
+     */
+    public function testImport(
+        int $linesCount,
+        int $importedCount,
+        int $alreadyExistCount,
+        array $onConsecutiveCalls
+    ): void {
         $uploadsDirectory = __DIR__;
         $file = (new FileUpload())->setFilename('Fixtures/data.xlsx');
 
@@ -23,26 +29,57 @@ class DataImportServiceTest extends TestCase
         $dataRepository
             ->expects($this->exactly($linesCount))
             ->method('findBy')
-            ->willReturn([]);
+            ->willReturnOnConsecutiveCalls(...$onConsecutiveCalls);
 
         $denormalizer = $this->createMock(DenormalizerInterface::class);
         $denormalizer
-            ->expects($this->exactly($linesCount))
+            ->expects($this->exactly($importedCount))
             ->method('denormalize')
             ->willReturn(new Data());
 
-        $violationList = new ConstraintViolationList([]);
         $validator = $this->createMock(ValidatorInterface::class);
         $validator
             ->expects($this->once())
             ->method('validate')
-            ->willReturn($violationList);
+            ->willReturn(new ConstraintViolationList([]));
 
         $service = new DataImportService($uploadsDirectory, $dataRepository, $denormalizer, $validator);
         $service->import($file);
 
-        $stats = $service->getStats();
-        $this->assertEquals($linesCount, $stats->getImportedCount());
-        $this->assertEquals(0, $stats->getAlreadyExistCount());
+        $this->assertEquals($importedCount, $service->getStats()->getImportedCount());
+        $this->assertEquals($alreadyExistCount, $service->getStats()->getAlreadyExistCount());
+    }
+
+    public function provideParams()
+    {
+        // linesCount | importedCount | alreadyExistCount | onConsecutiveCalls
+        yield 'Without allready imported data' => [
+            9,
+            9,
+            0,
+            [[], [], [], [], [], [], [], [], []],
+        ];
+        yield 'With 2 allready imported data' => [
+            9,
+            7,
+            2,
+            [[], [], [], [], [], [], [], [new Data()], [new Data()]],
+        ];
+        yield 'With only allready imported data' => [
+            9,
+            0,
+            9,
+            [
+                [new Data()],
+                [new Data()],
+                [new Data()],
+                [new Data()],
+                [new Data()],
+                [new Data()],
+                [new Data()],
+                [new Data()],
+                [new Data()],
+            ],
+        ];
     }
 }

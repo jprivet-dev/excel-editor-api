@@ -55,7 +55,6 @@ class DataImportService
                 'nomDuGroupe' => $row['nomDuGroupe'],
             ]);
 
-
             if (\count($result) > 0) {
                 $this->stats->addAlreadyExist($row['nomDuGroupe']);
 
