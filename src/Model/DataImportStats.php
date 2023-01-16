@@ -8,11 +8,12 @@ use App\Entity\FileUpload;
 
 final class DataImportStats
 {
+    private FileUpload $file;
     private array $imported = [];
     private array $alreadyExist = [];
 
-    public function __construct(private FileUpload $file)
-    {
+    public function setFile(FileUpload $file): void {
+        $this->file = $file;
     }
 
     public function getFile(): FileUpload

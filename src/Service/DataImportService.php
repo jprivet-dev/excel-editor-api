@@ -26,14 +26,15 @@ class DataImportService
         readonly ValidatorInterface $validator,
     ) {
         $this->headersMapping = new DataTableHeadersMapping();
+        $this->stats = new DataImportStats();
     }
 
     /**
      * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
      */
-    public function import(FileUpload $file): DataImportStats
+    public function import(FileUpload $file): void
     {
-        $this->stats = new DataImportStats($file);
+        $this->stats->setFile($file);
         $reader = $this->createReader($file);
 
         // BUG with the cache: $reader->getHeaders() & $reader->getOriginalHeaders()
@@ -54,6 +55,7 @@ class DataImportService
                 'nomDuGroupe' => $row['nomDuGroupe'],
             ]);
 
+
             if (\count($result) > 0) {
                 $this->stats->addAlreadyExist($row['nomDuGroupe']);
 
@@ -64,7 +66,10 @@ class DataImportService
 
             $this->add($row);
         });
+    }
 
+    public function getStats(): DataImportStats
+    {
         return $this->stats;
     }
 
