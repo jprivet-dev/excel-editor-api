@@ -22,8 +22,7 @@ class DataImportServiceTest extends TestCase
         int $alreadyExistCount,
         array $onConsecutiveCalls
     ): void {
-        $uploadsDirectory = __DIR__;
-        $file = (new FileUpload())->setFilename('Fixtures/data.xlsx');
+        $file = (new FileUpload(__DIR__))->setFilename('Fixtures/data.xlsx');
 
         $dataRepository = $this->createMock(DataRepository::class);
         $dataRepository
@@ -43,7 +42,7 @@ class DataImportServiceTest extends TestCase
             ->method('validate')
             ->willReturn(new ConstraintViolationList([]));
 
-        $service = new DataImportService($uploadsDirectory, $dataRepository, $denormalizer, $validator);
+        $service = new DataImportService($dataRepository, $denormalizer, $validator);
         $service->import($file);
 
         $this->assertEquals($importedCount, $service->getStats()->getImportedCount());

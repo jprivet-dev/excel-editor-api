@@ -19,7 +19,7 @@ class FileUpload
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
-    public function __construct()
+    public function __construct(private string $uploadsDirectory)
     {
         $this->createdAt = new \DateTimeImmutable();
     }
@@ -45,4 +45,11 @@ class FileUpload
     {
         return $this->createdAt;
     }
+
+    public function getCompletePath(): ?string
+    {
+        return sprintf('%s/%s', $this->uploadsDirectory, $this->filename);
+    }
+
+
 }

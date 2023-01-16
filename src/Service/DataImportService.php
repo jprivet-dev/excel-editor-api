@@ -20,7 +20,6 @@ class DataImportService
     private DataImportStats $stats;
 
     public function __construct(
-        readonly string $uploadsDirectory,
         readonly DataRepository $dataRepository,
         readonly DenormalizerInterface $denormalizer,
         readonly ValidatorInterface $validator,
@@ -74,8 +73,7 @@ class DataImportService
 
     private function createReader(FileUpload $file): SimpleExcelReader
     {
-        $path = sprintf('%s/%s', $this->uploadsDirectory, $file->getFilename());
-        $reader = new SimpleExcelReader($path);
+        $reader = new SimpleExcelReader($file->getCompletePath());
         $reader->useHeaders($this->headersMapping->getCamelCaseHeaders());
 
         return $reader;

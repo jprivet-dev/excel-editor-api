@@ -26,7 +26,3 @@ services:
     App\Service\FileUploadService:
         arguments:
             $uploadsDirectory: '%uploads_directory%'
-            
-    App\Service\DataImportService:
-        arguments:
-            $uploadsDirectory: '%uploads_directory%'
