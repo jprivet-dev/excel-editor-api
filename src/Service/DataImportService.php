@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Entity\Data;
 use App\Entity\FileUpload;
+use App\Model\DataImportStats;
 use App\Model\DataTableHeadersMapping;
 use App\Repository\DataRepository;
 use App\Validator\DataTableHeaders;
@@ -16,9 +17,7 @@ class DataImportService
 {
     private DataTableHeadersMapping $headersMapping;
 
-    private array $stats = [
-        'alreadyExistsCount' => 0,
-    ];
+    private DataImportStats $stats;
 
     public function __construct(
         readonly string $uploadsDirectory,
@@ -32,9 +31,9 @@ class DataImportService
     /**
      * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
      */
-    public function import(FileUpload $file): array
+    public function import(FileUpload $file): DataImportStats
     {
-        $this->stats['alreadyExistsCount'] = 0;
+        $this->stats = new DataImportStats($file);
         $reader = $this->createReader($file);
 
         // BUG with the cache: $reader->getHeaders() & $reader->getOriginalHeaders()
@@ -56,10 +55,12 @@ class DataImportService
             ]);
 
             if (\count($result) > 0) {
-                $this->stats['alreadyExistsCount']++;
+                $this->stats->addAlreadyExist($row['nomDuGroupe']);
 
                 return;
             }
+
+            $this->stats->addImported($row['nomDuGroupe']);
 
             $this->add($row);
         });

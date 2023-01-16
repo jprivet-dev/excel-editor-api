@@ -13,7 +13,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\SerializerInterface;
 
 #[Route('/api/upload')]
 #[OA\Tag(name: 'Upload (Excel files)')]
@@ -26,7 +25,6 @@ class UploadController extends AbstractController
         Request $request,
         FileUploadService $fileUpload,
         DataImportService $importService,
-        SerializerInterface $serializer
     ): JsonResponse {
         $requestFile = $request->files->get('file');
 
@@ -48,9 +46,7 @@ class UploadController extends AbstractController
             // TODO: trouver la meilleure approche pour fusionner les stats dans la réponse json.
             $stats = $importService->import($file);
 
-            $json = $serializer->serialize($file, 'json');
-
-            return new JsonResponse($json, Response::HTTP_CREATED, [], true);
+            return $this->json($stats, Response::HTTP_CREATED);
         }
 
         throw new InvalidArgumentException($form->getErrors(true));
