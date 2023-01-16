@@ -17,7 +17,7 @@ class DataImportServiceTest extends TestCase
     {
         $linesCount = 9;
         $uploadsDirectory = __DIR__;
-        $file = $this->createValidFile();
+        $file = (new FileUpload())->setFilename('Fixtures/data.xlsx');
 
         $dataRepository = $this->createMock(DataRepository::class);
         $dataRepository
@@ -45,10 +45,4 @@ class DataImportServiceTest extends TestCase
         $this->assertEquals($linesCount, $stats->getImportedCount());
         $this->assertEquals(0, $stats->getAlreadyExistCount());
     }
-
-    private function createValidFile(): FileUpload
-    {
-        return (new FileUpload())->setFilename('Fixtures/data.xlsx');;
-    }
-
 }
