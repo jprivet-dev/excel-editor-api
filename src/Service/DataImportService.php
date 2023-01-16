@@ -4,103 +4,84 @@ namespace App\Service;
 
 use App\Entity\Data;
 use App\Entity\FileUpload;
+use App\Model\DataImportStats;
+use App\Model\DataTableHeadersMapping;
 use App\Repository\DataRepository;
+use App\Validator\DataTableHeaders;
 use Spatie\SimpleExcel\SimpleExcelReader;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use Symfony\Component\Validator\Exception\ValidationFailedException;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class DataImportService
 {
-    /**
-     * Expected columns in the file to be imported.
-     */
-    private $headersMapping = [
-        'Nom du groupe' => 'nomDuGroupe',
-        'Origine' => 'origine',
-        'Ville' => 'ville',
-        'Année début' => 'anneeDebut',
-        'Année séparation' => 'anneeSeparation',
-        'Fondateurs' => 'fondateurs',
-        'Membres' => 'membres',
-        'Courant musical' => 'courantMusical',
-        'Présentation' => 'presentation',
-    ];
+    private DataTableHeadersMapping $headersMapping;
 
-    private $stats = [
-        'alreadyExistsCount' => 0,
-    ];
+    private DataImportStats $stats;
 
     public function __construct(
-        readonly string $uploadsDirectory,
-        private DataRepository $dataRepository,
-        private DenormalizerInterface $denormalizer
+        readonly DataRepository $dataRepository,
+        readonly DenormalizerInterface $denormalizer,
+        readonly ValidatorInterface $validator,
     ) {
+        $this->headersMapping = new DataTableHeadersMapping();
+        $this->stats = new DataImportStats();
     }
 
-    public function import(FileUpload $file): array
+    /**
+     * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
+     */
+    public function import(FileUpload $file): void
     {
-        $this->stats['alreadyExistsCount'] = 0;
-        $path = sprintf('%s/%s', $this->uploadsDirectory, $file->getFilename());
-        $reader = SimpleExcelReader::create($path);
+        $this->stats->setFile($file);
+        $reader = $this->createReader($file);
 
-        $reader->useHeaders(array_values($this->headersMapping));
-        // BUG: $reader->getHeaders() & $reader->getOriginalHeaders() can only
-        // be called once before validateOriginalHeaders().
-        $this->validateOriginalHeaders($reader->getOriginalHeaders());
+        // BUG with the cache: $reader->getHeaders() & $reader->getOriginalHeaders()
+        // can only be called once before validate the headers.
+        $headers = $reader->getOriginalHeaders();
+
+        $violations = $this->validator->validate(
+            $headers,
+            new DataTableHeaders($this->headersMapping->getExpectedHeaders())
+        );
+
+        if (\count($violations)) {
+            throw new ValidationFailedException($headers, $violations);
+        }
 
         $reader->getRows()->each(function (array $row) {
             $result = $this->dataRepository->findBy([
                 'nomDuGroupe' => $row['nomDuGroupe'],
             ]);
 
-            if (count($result) > 0) {
-                $this->stats['alreadyExistsCount']++;
+            if (\count($result) > 0) {
+                $this->stats->addAlreadyExist($row['nomDuGroupe']);
 
                 return;
             }
 
+            $this->stats->addImported($row['nomDuGroupe']);
+
             $this->add($row);
         });
+    }
 
+    public function getStats(): DataImportStats
+    {
         return $this->stats;
     }
 
-    private function validateOriginalHeaders(array $headers): void
+    private function createReader(FileUpload $file): SimpleExcelReader
     {
-        $expectedHeaders = array_keys($this->headersMapping);
-        $notAllowed = array_diff($headers, $expectedHeaders);
-        $notAllowedCount = count($notAllowed);
+        $reader = new SimpleExcelReader($file->getCompletePath());
+        $reader->useHeaders($this->headersMapping->getCamelCaseHeaders());
 
-        if ($notAllowedCount) {
-            $message = $notAllowedCount > 1
-                ? 'The columns [%s] in the imported file are not allowed.'
-                : 'The column "%s" in the imported file is not allowed.';
-
-            throw new \Exception(sprintf($message, implode(', ', $notAllowed)));
-        }
-
-        $mandatory = array_diff($expectedHeaders, $headers);
-        $mandatoryCount = count($mandatory);
-
-        if ($mandatoryCount) {
-            $message = $mandatoryCount > 1
-                ? 'The mandatory columns [%s] are not present in the imported file.'
-                : 'The mandatory column "%s" is not present in the imported file.';
-
-            throw new \Exception(sprintf($message, implode(', ', $mandatory)));
-        }
-
-        $ordered = array_diff_assoc($headers, $expectedHeaders);
-
-        if (count($ordered)) {
-            throw new \Exception(
-                sprintf(
-                    'The columns [%s] of the imported file are not in the right order.',
-                    implode(', ', $ordered)
-                )
-            );
-        }
+        return $reader;
     }
 
+    /**
+     * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
+     */
     private function add(array $row): void
     {
         /** @var Data $data */

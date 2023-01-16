@@ -20,7 +20,7 @@ class FileUploadService
     {
         $filename = $this->upload($uploadedFile);
 
-        $file = new FileUpload();
+        $file = new FileUpload($this->uploadsDirectory);
         $file->setFilename($filename);
 
         $this->repository->add($file, true);

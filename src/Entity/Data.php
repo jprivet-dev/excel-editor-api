@@ -6,6 +6,7 @@ use App\Repository\DataRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: DataRepository::class)]
 #[UniqueEntity(
@@ -17,9 +18,11 @@ class Data
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['getDataList'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255, unique: true)]
+    #[Groups(['getDataList'])]
     private ?string $nomDuGroupe = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -29,9 +32,11 @@ class Data
     private ?string $ville = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[Groups(['getDataList'])]
     private ?\DateTimeInterface $anneeDebut = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[Groups(['getDataList'])]
     private ?\DateTimeInterface $anneeSeparation = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -44,6 +49,7 @@ class Data
     private ?string $courantMusical = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['getDataList'])]
     private ?string $presentation = null;
 
     public function getId(): ?int

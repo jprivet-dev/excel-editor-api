@@ -169,15 +169,16 @@ schema_validate: ## Validate the mappings
 mapping_info: ## List mapped entities
 	$(SYMFONY) doctrine:mapping:info
 
-.PHONY: fixtures_load
-fixtures_load: ## Load fixtures
+.PHONY: fixtures
+fixtures: ## Load fixtures
 	$(SYMFONY) doctrine:fixtures:load
 
 ## — TEST & QUALITY ✅ ————————————————————————————————————————————————————————
 
 .PHONY: test
-test: ## Run PHPUnit
-	$(PHP) bin/phpunit
+test: ## Run PHPUnit. Pass the parameter "c=" to run a given command (example: make test c=tests/Service/DataImportServiceTest.php)
+	@$(eval c ?=)
+	$(PHP) bin/phpunit $(c)
 
 .PHONY: phpcs
 phpcs: ## Run PHP CS (PHP_CodeSniffer). Pass the parameter "c=" to run a given command (example: make phpcs c=src/Kernel.php)
@@ -193,6 +194,16 @@ phpcbf: ## Run PHP CS Fixer (PHP_CodeSniffer). Pass the parameter "c=" to run a 
 phpmd: ## Run PHP Mess Detector on `src` folder by default. Pass the parameter "c=" to run a given command (example: make phpcs c=src/Kernel.php)
 	@$(eval c ?= $(FOLDERS))
 	$(PHP_CONT) ./vendor/bin/phpmd $(c) ansi phpmd.xml
+
+## — JWT & OPENSSL 🔒️ —————————————————————————————————————————————————————————
+
+.PHONY: openssl_version
+openssl_version: ## Get the OpenSSL version
+	$(PHP_CONT) openssl version
+
+.PHONY: generate_keypair
+generate_keypair: ## Generate the SSL keys (private.pem & public.pem) with lexik, for the JWT authentication
+	$(SYMFONY) lexik:jwt:generate-keypair
 
 ## — TROUBLESHOOTING 😵‍️ ———————————————————————————————————————————————————————
 
