@@ -23,11 +23,9 @@ PHP      = $(PHP_CONT) php
 COMPOSER = $(PHP_CONT) composer
 SYMFONY  = $(PHP_CONT) bin/console
 
-# Misc
-.DEFAULT_GOAL = help
-
 ## — 🎵 🐳 THE SYMFONY DOCKER MAKEFILE 🐳 🎵 ——————————————————————————————————
 
+.DEFAULT_GOAL = help
 .PHONY: help
 help: ## Print self-documented Makefile
 	@grep -E '(^[.a-zA-Z_-]+[^:]+:.*##.*?$$)|(^#{2})' $(MAKEFILE_LIST) \
@@ -73,10 +71,6 @@ detach: ## Create and start containers in detached mode (no logs)
 down: ## Stop and remove containers, networks
 	$(DOCKER_COMP) down --remove-orphans
 
-.PHONY: stop_all
-stop_all: ## Stop all projects running containers without removing them
-	docker stop $$(docker ps -a -q)
-
 .PHONY: logs
 logs: ## Show live logs
 	$(DOCKER_COMP) logs --tail=0 --follow
@@ -84,7 +78,7 @@ logs: ## Show live logs
 ##
 
 .PHONY: install
-install: build start ## Build & Start
+install: build up ## Build & Start
 
 .PHONY: start
 start: up ## 'up' alias
@@ -94,6 +88,10 @@ start: up ## 'up' alias
 
 .PHONY: stop
 stop: down ## 'down' alias
+
+.PHONY: stop_all
+stop_all: ## Stop all projects running containers without removing them
+	docker stop $$(docker ps -a -q)
 
 ## — PHP 🚀 ———————————————————————————————————————————————————————————————————
 
