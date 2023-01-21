@@ -93,6 +93,11 @@ stop: down ## 'down' alias
 stop_all: ## Stop all projects running containers without removing them
 	docker stop $$(docker ps -a -q)
 
+.PHONY: remove_containers
+# @see https://www.digitalocean.com/community/tutorials/how-to-remove-docker-images-containers-and-volumes
+remove_containers: ## Remove all containers
+	docker rm $$(docker ps -a -q)
+
 ## — PHP 🚀 ———————————————————————————————————————————————————————————————————
 
 .PHONY: php
