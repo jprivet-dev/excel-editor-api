@@ -57,7 +57,7 @@ build: ## Build the first time or rebuild fresh images if necessary
 
 .PHONY: up
 up: ## Create and start containers
-	$(DOCKER_COMP) up --remove-orphans
+	XDEBUG_MODE=coverage $(DOCKER_COMP) up --remove-orphans
 
 #.PHONY: up_prod
 #up_prod: ## Create and start containers (PRODUCTION environement)
@@ -101,7 +101,7 @@ remove_containers: ## Remove all containers
 ## — PHP 🚀 ———————————————————————————————————————————————————————————————————
 
 .PHONY: php
-php: ## Run PHP, pass the parameter "c=" to run a given command, example: make composer c=bin/console
+php: ## Run PHP. Pass the parameter "c=" to run a given command, example: make composer c=bin/console
 	@$(eval c ?=)
 	$(PHP) $(c)
 
@@ -182,6 +182,15 @@ fixtures: ## Load fixtures
 test: ## Run PHPUnit. Pass the parameter "c=" to run a given command (example: make test c=tests/Service/DataImportServiceTest.php)
 	@$(eval c ?=)
 	$(PHP) bin/phpunit $(c)
+
+PHONY: coverage
+coverage: ## Generate code coverage report in HTML format
+	$(PHP) bin/phpunit --coverage-html coverage/html
+	@echo coverage/html/index.html
+
+PHONY: clover
+clover: ## Generate code coverage report in Clover XML format
+	$(PHP) bin/phpunit --coverage-clover coverage/clover.xml
 
 .PHONY: phpcs
 phpcs: ## Run PHP CS (PHP_CodeSniffer). Pass the parameter "c=" to run a given command (example: make phpcs c=src/Kernel.php)
