@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+export CODACY_PROJECT_TOKEN=1234abcd
