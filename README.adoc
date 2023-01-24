@@ -330,7 +330,7 @@ image::doc/img/phpstorm-settings-phpunit-toggle-auto-test.png[]
 * https://github.com/karma-runner/karma-coverage
 ====
 
-TIP: Karma: generate code coverage using https://istanbul.js.org/[Istanbul].
+TIP: Set `XDEBUG_MODE=coverage` before starting the container (see https://github.com/dunglas/symfony-docker/blob/main/docs/xdebug.md).
 
 Duplicate `CODACY_PROJECT_TOKEN.sh`:
 
@@ -340,9 +340,9 @@ $ cp scripts/CODACY_PROJECT_TOKEN.sh.dist scripts/CODACY_PROJECT_TOKEN.sh
 
 And define the API token `CODACY_PROJECT_TOKEN` (see {codacy_project_settings_coverage}).
 
-The file `scripts/CODACY_PROJECT_TOKEN.sh` is ignored by Git and imported by `scripts/reporter.sh`.
+The file `scripts/CODACY_PROJECT_TOKEN.sh` is ignored by *Git* and imported by `scripts/reporter.sh`.
 
-The file `scripts/reporter.sh` generates code coverage and uploads the coverage reports on Codacy.
+The file `scripts/reporter.sh` generates code coverage (a `clover.xml` file with *PHPUnit*) and uploads the coverage reports on *Codacy*.
 
 {back_to_top}
 
