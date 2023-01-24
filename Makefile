@@ -183,13 +183,12 @@ test: ## Run PHPUnit. Pass the parameter "c=" to run a given command (example: m
 	@$(eval c ?=)
 	$(PHP) bin/phpunit $(c)
 
-PHONY: coverage
-coverage: ## Generate code coverage report in HTML format
+PHONY: coverage-html
+coverage-html: ## Generate code coverage report in HTML format
 	$(PHP) bin/phpunit --coverage-html coverage/html
-	@echo coverage/html/index.html
 
-PHONY: clover
-clover: ## Generate code coverage report in Clover XML format
+PHONY: coverage-clover
+coverage-clover: ## Generate code coverage report in Clover XML format
 	$(PHP) bin/phpunit --coverage-clover coverage/clover.xml
 
 .PHONY: phpcs
