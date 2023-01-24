@@ -33,7 +33,7 @@ fi
 printf "> API token CODACY_PROJECT_TOKEN = %s\n" "${CODACY_PROJECT_TOKEN}"
 printf "> Generate code coverage:\n"
 
-make coverage
+make coverage-clover
 
 if [ ! -f ${COVERAGE_FILE} ]; then
   printf "ERROR! The file '%s' does not exist.\n" "${COVERAGE_FILE}"
