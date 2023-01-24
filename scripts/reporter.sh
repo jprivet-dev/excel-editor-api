@@ -6,7 +6,7 @@ set -e +o pipefail
 # $ . scripts/reporter.sh
 
 function git_status_modified_count() {
-  git status --porcelain | grep '^M' | wc -l 2>/dev/null
+  git status --porcelain | grep '^[MA]' | wc -l 2>/dev/null
 }
 
 printf "##############################\n"
@@ -43,7 +43,7 @@ fi
 git add "${COVERAGE_FILE}"
 
 if [ "$(git_status_modified_count)" == 0 ]; then
-  printf "ERROR! No files to commit !\n"
+  printf "ERROR! No files to commit.\n"
   return
 fi
 
