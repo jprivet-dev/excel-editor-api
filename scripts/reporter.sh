@@ -15,7 +15,7 @@ printf "##############################\n"
 
 CODACY_PROJECT_COVERAGE_TAB=https://app.codacy.com/gh/jprivet-dev/excel-editor-api/settings/coverage
 CODACY_PROJECT_TOKEN_FILE=./scripts/CODACY_PROJECT_TOKEN.sh
-LCOV_INFO_FILE=./coverage/lcov/lcov.info
+COVERAGE_FILE=./coverage/clover.xml
 
 if [ -f "${CODACY_PROJECT_TOKEN_FILE}" ]; then
   source "${CODACY_PROJECT_TOKEN_FILE}"
@@ -33,14 +33,14 @@ fi
 printf "> API token CODACY_PROJECT_TOKEN = %s\n" "${CODACY_PROJECT_TOKEN}"
 printf "> Generate code coverage:\n"
 
-docker compose exec node ng test --no-watch --code-coverage
+make coverage
 
-if [ ! -f ${LCOV_INFO_FILE} ]; then
-  printf "ERROR! The file '%s' does not exist.\n" "${LCOV_INFO_FILE}"
+if [ ! -f ${COVERAGE_FILE} ]; then
+  printf "ERROR! The file '%s' does not exist.\n" "${COVERAGE_FILE}"
   return
 fi
 
-git add "${LCOV_INFO_FILE}"
+git add "${COVERAGE_FILE}"
 
 if [ "$(git_status_modified_count)" == 0 ]; then
   printf "ERROR! No files to commit !\n"
@@ -49,7 +49,7 @@ fi
 
 git commit -m "tests(codacy): save coverage reports in lcov format"
 
-printf "> Upload the coverage reports '%s'\n" "${LCOV_INFO_FILE}"
-bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r "${LCOV_INFO_FILE}"
+printf "> Upload the coverage reports '%s'\n" "${COVERAGE_FILE}"
+bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r "${COVERAGE_FILE}"
 
 printf "> Update remote refs with '$ git push'.\n"
