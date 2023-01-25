@@ -23,11 +23,9 @@ PHP      = $(PHP_CONT) php
 COMPOSER = $(PHP_CONT) composer
 SYMFONY  = $(PHP_CONT) bin/console
 
-# Misc
-.DEFAULT_GOAL = help
-
 ## — 🎵 🐳 THE SYMFONY DOCKER MAKEFILE 🐳 🎵 ——————————————————————————————————
 
+.DEFAULT_GOAL = help
 .PHONY: help
 help: ## Print self-documented Makefile
 	@grep -E '(^[.a-zA-Z_-]+[^:]+:.*##.*?$$)|(^#{2})' $(MAKEFILE_LIST) \
@@ -59,7 +57,7 @@ build: ## Build the first time or rebuild fresh images if necessary
 
 .PHONY: up
 up: ## Create and start containers
-	$(DOCKER_COMP) up --remove-orphans
+	XDEBUG_MODE=coverage $(DOCKER_COMP) up --remove-orphans
 
 #.PHONY: up_prod
 #up_prod: ## Create and start containers (PRODUCTION environement)
@@ -73,10 +71,6 @@ detach: ## Create and start containers in detached mode (no logs)
 down: ## Stop and remove containers, networks
 	$(DOCKER_COMP) down --remove-orphans
 
-.PHONY: stop_all
-stop_all: ## Stop all projects running containers without removing them
-	docker stop $$(docker ps -a -q)
-
 .PHONY: logs
 logs: ## Show live logs
 	$(DOCKER_COMP) logs --tail=0 --follow
@@ -84,7 +78,7 @@ logs: ## Show live logs
 ##
 
 .PHONY: install
-install: build start ## Build & Start
+install: build up ## Build & Start
 
 .PHONY: start
 start: up ## 'up' alias
@@ -95,10 +89,19 @@ start: up ## 'up' alias
 .PHONY: stop
 stop: down ## 'down' alias
 
+.PHONY: stop_all
+stop_all: ## Stop all projects running containers without removing them
+	docker stop $$(docker ps -a -q)
+
+.PHONY: remove_containers
+# @see https://www.digitalocean.com/community/tutorials/how-to-remove-docker-images-containers-and-volumes
+remove_containers: ## Remove all containers
+	docker rm $$(docker ps -a -q)
+
 ## — PHP 🚀 ———————————————————————————————————————————————————————————————————
 
 .PHONY: php
-php: ## Run PHP, pass the parameter "c=" to run a given command, example: make composer c=bin/console
+php: ## Run PHP. Pass the parameter "c=" to run a given command, example: make composer c=bin/console
 	@$(eval c ?=)
 	$(PHP) $(c)
 
@@ -179,6 +182,14 @@ fixtures: ## Load fixtures
 test: ## Run PHPUnit. Pass the parameter "c=" to run a given command (example: make test c=tests/Service/DataImportServiceTest.php)
 	@$(eval c ?=)
 	$(PHP) bin/phpunit $(c)
+
+PHONY: coverage-html
+coverage-html: ## Generate code coverage report in HTML format
+	$(PHP) bin/phpunit --coverage-html coverage/html
+
+PHONY: coverage-clover
+coverage-clover: ## Generate code coverage report in Clover XML format
+	$(PHP) bin/phpunit --coverage-clover coverage/clover.xml
 
 .PHONY: phpcs
 phpcs: ## Run PHP CS (PHP_CodeSniffer). Pass the parameter "c=" to run a given command (example: make phpcs c=src/Kernel.php)
