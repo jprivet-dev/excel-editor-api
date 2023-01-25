@@ -353,6 +353,7 @@ The file `scripts/reporter.sh` generates code coverage (a `clover.xml` file with
 * Symfony documentation: https://symfony.com/doc/current/index.html
 * Build a REST API with Symfony: https://openclassrooms.com/fr/courses/7709361-construisez-une-api-rest-avec-symfony
 * Richardson Maturity Model: https://martinfowler.com/articles/richardsonMaturityModel.html
+* Building Restful APIs with Symfony 5 and PHP 8: https://dev.to/hantsy_26/-building-restful-apis-with-symfony-5-and-php-8-1p2e
 
 {back_to_top}
 
