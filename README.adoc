@@ -53,18 +53,20 @@ endif::[]
 image:https://badgen.net/badge/release/{project_release}/blue[Project release,link=https://github.com/jprivet-dev/excel-editor-api/releases/tag/{project_release}]
 image:https://badgen.net/badge/php/{php_release}/7A86B8[PHP release,link=https://www.php.net/releases/{php_release_underscore}.php]
 image:https://badgen.net/badge/symfony/{symfony_release}/73D631[Symfony release,link=https://github.com/symfony/symfony/releases/tag/{symfony_release}]
-image:https://app.codacy.com/project/badge/Grade/65cecce3bac34c71ba7ba9035bbcabce["Codacy code quality", link="https://www.codacy.com/gh/jprivet-dev/excel-editor-api/dashboard?utm_source=github.com&utm_medium=referral&utm_content=jprivet-dev/excel-editor-api&utm_campaign=Badge_Grade"]
-image:https://app.codacy.com/project/badge/Coverage/65cecce3bac34c71ba7ba9035bbcabce["Codacy code quality", link="https://www.codacy.com/gh/jprivet-dev/excel-editor-api/dashboard?utm_source=github.com&utm_medium=referral&utm_content=jprivet-dev/excel-editor-api&utm_campaign=Badge_Coverage"]
+image:https://app.codacy.com/project/badge/Grade/65cecce3bac34c71ba7ba9035bbcabce["Codacy code quality",link="https://www.codacy.com/gh/jprivet-dev/excel-editor-api/dashboard?utm_source=github.com&utm_medium=referral&utm_content=jprivet-dev/excel-editor-api&utm_campaign=Badge_Grade"]
+image:https://app.codacy.com/project/badge/Coverage/65cecce3bac34c71ba7ba9035bbcabce["Codacy code quality",link="https://www.codacy.com/gh/jprivet-dev/excel-editor-api/dashboard?utm_source=github.com&utm_medium=referral&utm_content=jprivet-dev/excel-editor-api&utm_campaign=Badge_Coverage"]
 
 toc::[]
 
 == Presentation
 
-Study of an API (Symfony) and a SPA (Angular), to load data in CSV/Excel format, with consultation and modification of this data online.
+Study of an SPA (Angular) and an API (Symfony), with loading of Excel files, then consultations and/or modifications on line, according to the rights of the authenticated user.
+
+image::doc/img/excel-editor-architecture-diagram.png[]
 
 |===
-| API (Symfony/Docker) | {git_url_api}
 | SPA (Angular/Docker) | {git_url_spa}
+| API (Symfony/Docker) | {git_url_api}
 | Insomnia - design, debug and test the API (https://insomnia.rest/) | {git_url_insomnia}
 |===
 
@@ -74,7 +76,8 @@ Study of an API (Symfony) and a SPA (Angular), to load data in CSV/Excel format,
 
 === Docker Compose CLI
 
-Be sure to install the latest version of *Docker Compose CLI* plugin (https://docs.docker.com/compose/install/compose-plugin/). With the older generation of docker compose, I had encountered the following error:
+Be sure to install the latest version of *Docker Compose CLI* plugin (https://docs.docker.com/compose/install/compose-plugin/).
+With the older generation of docker compose, I had encountered the following error:
 
 ```
 $ docker-compose build --pull --no-cache
@@ -161,7 +164,8 @@ That project (API & SPA) use the `camelCase` format for the property names of JS
 * https://openclassrooms.com/fr/courses/7709361-construisez-une-api-rest-avec-symfony/7795134-gerez-les-erreurs-et-ajoutez-la-validation
 ====
 
-In this project, *I will not use a listener or subscriber to force all errors into JSON format*. As for example with the following subscriber:
+In this project, *I will not use a listener or subscriber to force all errors into JSON format*.
+As for example with the following subscriber:
 
 ```php
 namespace App\EventSubscriber;
