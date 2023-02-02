@@ -60,11 +60,7 @@ toc::[]
 
 == Presentation
 
-Study of a {git_url_spa}[SPA (Angular)] and an {git_url_api}[API (Symfony)], with management of Excel files (uploading, reading and modification of data, depending to the authenticated user).
-
-image::doc/img/excel-editor-architecture-diagram.png[]
-
-Study of a {git_url_spa}[SPA (Angular)] and an {git_url_api}[API (Symfony)], with management of Excel files (uploading, reading and modification of data, depending to the authenticated user).
+Study of a {git_url_spa}[SPA (Angular)] coupled to an {git_url_api}[API (Symfony)], with import and edition of Excel data.
 
 image::doc/img/excel-editor-architecture-diagram.png[]
 
