@@ -21,7 +21,7 @@ endif::[]
 :back_to_top_label: ⬆ Back to top
 :back_to_top: <<{back_to_top_target},{back_to_top_label}>>
 
-:main_title: Excel Editor (Part 2/3 - API with Symfony)
+:main_title: Excel Editor API
 :git_project_base: excel-editor
 :git_project_api: {git_project_base}-api
 :git_project_spa: {git_project_base}-spa
@@ -65,9 +65,9 @@ Study of a {git_url_spa}[SPA (Angular)] coupled to an {git_url_api}[API (Symfony
 image::doc/img/excel-editor-architecture-diagram.png[]
 
 |===
-| Part 1/3 - SPA with https://angular.io/[Angular] | {git_url_spa}
-| Part 2/3 - API with https://symfony.com/[Symfony] | {git_url_api}
-| Part 3/3 - Debug with https://insomnia.rest/[Insomnia] | {git_url_insomnia}
+| Excel Editor SPA | {git_url_spa}
+| Excel Editor API | {git_url_api}
+| Excel Editor Insomnia | {git_url_insomnia}
 |===
 
 {back_to_top}
@@ -76,24 +76,7 @@ image::doc/img/excel-editor-architecture-diagram.png[]
 
 === Docker Compose CLI
 
-Be sure to install the latest version of *Docker Compose CLI* plugin (https://docs.docker.com/compose/install/compose-plugin/).
-With the older generation of docker compose, I had encountered the following error:
-
-```
-$ docker-compose build --pull --no-cache
-...
-Status: Downloaded newer image for composer:2
- ---> daa583eddaba
-Step 27/31 : COPY composer.* symfony.* ./
-COPY failed: no source files were specified
-ERROR: Service 'php' failed to build : Build failed
-```
-
-Problem solved with the latest generation:
-
-```
-$ docker compose build --pull --no-cache
-```
+IMPORTANT: Be sure to install the latest version of https://docs.docker.com/compose/install/compose-plugin/[Docker Compose CLI plugin].
 
 {back_to_top}
 
@@ -108,21 +91,40 @@ $ docker compose build --pull --no-cache
 . Open https://localhost and https://stackoverflow.com/a/15076602/1352334[accept the auto-generated TLS certificate].
 . `$ make stop`: Stop and remove containers, networks (alias: `$ make down`).
 
-NOTE: `$ make` to see all available commands.
+TIP: See all available commands with `$ make`.
+
+[NOTE]
+====
+With {git_url_api}[Excel Editor API], you can use...
+
+* {git_url_spa}[Excel Editor SPA]: a front-end application made with https://angular.io/[Angular].
+* {git_url_insomnia}[Excel Editor Insomnia]: the configuration to test the API with https://insomnia.rest/[Insomnia].
+====
 
 {back_to_top}
 
-== Docker environments
+== Main technical constraints for the study
 
-When you run `$ docker compose up` it reads the overrides automatically (`docker-compose.yml` and `docker-compose.override.yml`).
-
-To deploy with this production Compose file you can run:
-
-```
-$  docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
-```
+* Use of the latest version of https://symfony.com/[Symfony].
+* No https://api-platform.com/[API Platform] or http://jmsyst.com/libs/serializer[JMSSerializer]: the objective is to study in depth https://symfony.com/doc/current/components/serializer.html[the Serializer Component].
+* Use mainly the code generation commands (https://symfony.com/bundles/SymfonyMakerBundle/current/index.html[Symfony MakerBundle]).
+* The project must be dockerized (https://github.com/dunglas/symfony-docker[Symfony Docker]).
+* The project must have a consistent and correct code coverage.
 
 {back_to_top}
+
+// TODO: disable for the moment. To reactivate.
+//== Docker environments
+//
+//When you run `$ docker compose up` it reads the overrides automatically (`docker-compose.yml` and `docker-compose.override.yml`).
+//
+//To deploy with this production Compose file you can run:
+//
+//```
+//$  docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+//```
+//
+//{back_to_top}
 
 == API documentation with Nelmio
 
@@ -348,6 +350,31 @@ And define the API token `CODACY_PROJECT_TOKEN` (see {codacy_project_settings_co
 The file `scripts/CODACY_PROJECT_TOKEN.sh` is ignored by *Git* and imported by `scripts/reporter.sh`.
 
 The file `scripts/reporter.sh` generates code coverage (a `clover.xml` file with *PHPUnit*) and uploads the coverage reports on *Codacy*.
+
+{back_to_top}
+
+== Troubleshooting
+
+=== Docker Compose CLI
+
+Be sure to install the latest version of https://docs.docker.com/compose/install/compose-plugin/[Docker Compose CLI plugin].
+With the older generation of docker compose, I had encountered the following error:
+
+```
+$ docker-compose build --pull --no-cache
+...
+Status: Downloaded newer image for composer:2
+ ---> daa583eddaba
+Step 27/31 : COPY composer.* symfony.* ./
+COPY failed: no source files were specified
+ERROR: Service 'php' failed to build : Build failed
+```
+
+Problem solved with the latest generation:
+
+```
+$ docker compose build --pull --no-cache
+```
 
 {back_to_top}
 
