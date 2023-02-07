@@ -1,3 +1,7 @@
+# URLs
+URL_LOCALHOST = https://localhost
+URL_DOC = $(URL_LOCALHOST)/api/doc
+
 # Docker files
 DOCKER_COMP_FILE 			= docker-compose.yml
 DOCKER_COMP_FILE_OVERRIDE 	= docker-compose.override.yml
@@ -48,6 +52,14 @@ help: ## Print self-documented Makefile
 				; \
 		}'
 	@echo
+
+.PHONY: info
+info: ## Print info & URLs
+	@echo "------------------------"
+	@echo "|   Excel Editor API   |"
+	@echo "------------------------"
+	@echo "LOCALHOST: $(URL_LOCALHOST)"
+	@echo "DOC:       $(URL_DOC)"
 
 ## — DOCKER 🐳 ————————————————————————————————————————————————————————————————
 
