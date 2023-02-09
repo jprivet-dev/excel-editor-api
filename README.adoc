@@ -60,15 +60,23 @@ toc::[]
 
 == Presentation
 
-Study of a {git_url_spa}[SPA (Angular)] coupled to an {git_url_api}[API (Symfony)], with import and edition of Excel data.
+=== SPA, API & Insomnia
 
-image::doc/img/excel-editor-architecture-diagram.png[]
+Study of a complete application, with a {git_url_spa}[SPA (Angular)] and an {git_url_api}[API (Symfony)], which allows users to connect, and to be able, according to their rights, to import Excel data and modify them online.
 
 |===
 | Excel Editor SPA | {git_url_spa}
 | Excel Editor API | {git_url_api}
 | Excel Editor Insomnia | {git_url_insomnia}
 |===
+
+{back_to_top}
+
+=== Diagrams
+
+==== Global architecture
+
+image::doc/img/excel-editor-architecture-diagram.png[]
 
 {back_to_top}
 
