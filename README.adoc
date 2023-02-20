@@ -110,7 +110,7 @@ image::doc/img/nelmio-api-doc.png[]
 [TIP]
 ====
 * `$ make stop`: Stop and remove containers, networks (alias: `$ make down`).
-* `$ make`: See all available commands with.
+* `$ make`: See all available make commands.
 ====
 
 [NOTE]
