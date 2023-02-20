@@ -90,16 +90,28 @@ IMPORTANT: Be sure to install the latest version of https://docs.docker.com/comp
 
 == Installation
 
+=== In Terminal 1
+
 . `$ git clone {git_ssh_current}`.
 . `$ cd {git_project_current}`.
 . `$ make build`: Build (the first time) or rebuild fresh images if necessary.
 . `$ make start`: Create and start containers (alias: `$ make up`).
+
+=== In Terminal 2
+
 . `$ make generate_keypair`: (the first time) Generate the SSL keys for the JWT authentication.
 . `$ make fixtures`: create an admin & an user profils.
-. Open https://localhost and https://stackoverflow.com/a/15076602/1352334[accept the auto-generated TLS certificate].
-. `$ make stop`: Stop and remove containers, networks (alias: `$ make down`).
+. Open your browser on https://localhost/api/doc and https://stackoverflow.com/a/15076602/1352334[accept the auto-generated TLS certificate].
 
-TIP: See all available commands with `$ make`.
+TIP: For the following times, you will only need the `$ make start` command to launch the project.
+
+image::doc/img/nelmio-api-doc.png[]
+
+[TIP]
+====
+* `$ make stop`: Stop and remove containers, networks (alias: `$ make down`).
+* `$ make`: See all available commands with.
+====
 
 [NOTE]
 ====
@@ -139,8 +151,6 @@ With {git_url_api}[Excel Editor API], you can use...
 NOTE: This project use https://github.com/nelmio/NelmioApiDocBundle
 
 Open https://localhost/api/doc to see the API documentation.
-
-image::doc/img/nelmio-api-doc.png[]
 
 {back_to_top}
 
