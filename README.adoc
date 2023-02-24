@@ -28,6 +28,7 @@ endif::[]
 :git_project_insomnia: {git_project_base}-insomnia
 :git_username: jprivet-dev
 :git_url_api: https://github.com/{git_username}/{git_project_api}
+:git_url_api_data: {git_url_api}/tree/main/data
 :git_url_spa: https://github.com/{git_username}/{git_project_spa}
 :git_url_insomnia: https://github.com/{git_username}/{git_project_insomnia}
 :git_ssh_api: git@github.com:{git_username}/{git_project_api}
@@ -124,6 +125,16 @@ image::doc/img/nelmio-api-doc.png[]
 * `$ make stop`: Stop and remove containers, networks (alias: `$ make down`).
 * `$ make`: See all available make commands.
 ====
+
+{back_to_top}
+
+== Upload Excel files
+
+The Excel files are uploaded and renamed (with a unique indentifier) in the `uploads` folder.
+
+TIP: You can test and upload the Excel files in the {git_url_api_data}[data] folder.
+
+To purge the `uploads` folder: `$ rm uploads/*.xlsx`.
 
 {back_to_top}
 
