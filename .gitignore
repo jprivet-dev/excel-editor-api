@@ -13,7 +13,8 @@
 /.phpcs-cache
 ###< squizlabs/php_codesniffer ###
 
-/uploads
+/uploads/*
+!/uploads/.gitignore
 
 ###> lexik/jwt-authentication-bundle ###
 /config/jwt/*.pem
