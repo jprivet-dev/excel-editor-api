@@ -64,7 +64,7 @@ info: ## Print info & URLs
 ## — DOCKER 🐳 ————————————————————————————————————————————————————————————————
 
 .PHONY: build
-build: ## Build the first time or rebuild fresh images if necessary
+build: ## Build (the first time) or rebuild fresh images if necessary
 	$(DOCKER_COMP) build --pull --no-cache
 
 .PHONY: up
@@ -90,7 +90,7 @@ logs: ## Show live logs
 ##
 
 .PHONY: install
-install: build up ## Build & Start
+install: build detach generate_keypair fixtures logs ## Full installation (to the very first cloning of the project)
 
 .PHONY: start
 start: up ## 'up' alias
