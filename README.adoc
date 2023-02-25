@@ -271,14 +271,21 @@ IMPORTANT: The following configuration are provided for *PHPStorm 2022.3.2*
 === Docker Compose-based remote PHP interpreter
 
 . Go on  *Settings (Ctrl+Alt+S) > PHP*.
-. In the *PHP Settings* dialog, click the Browse button kbd:[...] next to the *CLI Interpreter* list.
-. In the *CLI Interpreters* dialog that opens, select "From Docker, Vagrant, VM, WSL, Remote...".
+. In the *PHP Settings* dialog, click on the Browse button kbd:[...] next to the *CLI Interpreter* list.
+. In the *CLI Interpreters* dialog that opens, click on kbd:[+] and select "From Docker, Vagrant, VM, WSL, Remote...".
++
+image::doc/img/phpstorm-2022.3.2-settings-php-select-cli-interpreter.png[]
 . In the *Configure Remote PHP Interpreter* dialog that opens, select "Docker" :
 ** *Server:* Docker
 ** *Image name:* excel-editor-api-php:latest
 ** *PHP interpreter path:* php
-. In the *Configure Remote PHP Interpreter* dialog, click the button kbd:[OK].
-. In the *CLI Interpreters* dialog, click the button kbd:[OK].
+** And click on the button kbd:[OK].
++
+image::doc/img/phpstorm-2022.3.2-settings-php-configure-remote-php-interpreterpng.png[]
+. In the *CLI Interpreters* dialog, click on the button kbd:[OK].
++
+image::doc/img/phpstorm-2022.3.2-settings-php-cli-interpreters.png[]
+. In the *Settings* dialog, click on kbd:[OK] or kbd:[Apply] to validate all.
 
 image::doc/img/phpstorm-2022.3.2-settings-php.png[]
 
@@ -304,6 +311,7 @@ NOTE: See https://www.jetbrains.com/help/phpstorm/using-php-code-sniffer.html#co
 . In *Configuration*, choose *By default project interpreter*.
 . In *Coding standard*, select kbd:[Custom] and choose the `phpcs.xml` file of this repository.
 . After the configuration of *PHP_CodeSniffer*, *PHPStorm* will highlight the problematic lines in the files and can run *PHP CS fixer*.
+. In the *Settings* dialog, click on kbd:[OK] or kbd:[Apply] to validate all.
 
 image::doc/img/phpstorm-2022.3.2-settings-php-codesniffer.png[]
 
@@ -343,6 +351,7 @@ NOTE: See https://www.jetbrains.com/help/phpstorm/using-php-mess-detector.html#c
 . Expand the *PHP Mess Detector* area and switch kbd:[ON] the tool.
 . In *Configuration*, choose *By default project interpreter*.
 . In *Custom rulesets*, click on kbd:[+] and choose the `phpmd.xml` file of this repository.
+. In the *Settings* dialog, click on kbd:[OK] or kbd:[Apply] to validate all.
 
 image::doc/img/phpstorm-2022.3.2-settings-php-mess-detector.png[]
 
@@ -369,7 +378,7 @@ image::doc/img/phpstorm-2022.3.2-settings-phpunit-by-remote-interpreter.png[]
 . In *PHPUnit by Remote Interpreter*, select *excel-editor-api-php:latest* and click on kbd:[OK].
 +
 image::doc/img/phpstorm-2022.3.2-settings-phpunit-by-remote-interpreter-select.png[]
-. In Settings dialog, click on kbd:[OK] to validate all.
+. In the *Settings* dialog, click on kbd:[OK] or kbd:[Apply] to validate all.
 
 image::doc/img/phpstorm-2022.3.2-settings-phpunit.png[]
 
