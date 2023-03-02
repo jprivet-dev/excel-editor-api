@@ -93,14 +93,6 @@ IMPORTANT: Be sure to install the latest version of https://docs.docker.com/comp
 
 === To the very first cloning of the project
 
-[NOTE]
-====
-With {git_url_api}[Excel Editor API], you can use...
-
-* {git_url_spa}[Excel Editor SPA]: a front-end application made with https://angular.io/[Angular].
-* {git_url_insomnia}[Excel Editor Insomnia]: the configuration to test the API with https://insomnia.rest/[Insomnia].
-====
-
 . `$ git clone {git_ssh_current}`.
 . `$ cd {git_project_current}`.
 . `$ make install`: This command will execute the following commands:
@@ -111,7 +103,13 @@ With {git_url_api}[Excel Editor API], you can use...
 ** `$ make logs`: Show live logs.
 . Open your browser on https://localhost/api/doc and https://stackoverflow.com/a/15076602/1352334[accept the auto-generated TLS certificate].
 
-image::doc/img/nelmio-api-doc.png[]
+[NOTE]
+====
+With {git_url_api}[Excel Editor API], you can use...
+
+* {git_url_spa}[Excel Editor SPA]: a front-end application made with https://angular.io/[Angular].
+* {git_url_insomnia}[Excel Editor Insomnia]: the configuration to test the API with https://insomnia.rest/[Insomnia].
+====
 
 {back_to_top}
 
@@ -125,6 +123,14 @@ image::doc/img/nelmio-api-doc.png[]
 * `$ make stop`: Stop and remove containers, networks (alias: `$ make down`).
 * `$ make`: See all available make commands.
 ====
+
+{back_to_top}
+
+== Screenshot
+
+=== Nelmio documentation
+
+image::doc/img/nelmio-api-doc.png[]
 
 {back_to_top}
 
