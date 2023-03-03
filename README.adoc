@@ -101,7 +101,35 @@ IMPORTANT: Be sure to install the latest version of https://docs.docker.com/comp
 ** `$ make generate_keypair`: Generate the SSL keys for the JWT authentication.
 ** `$ make fixtures`: Create an admin & an user profils.
 ** `$ make logs`: Show live logs.
-. Open your browser on https://localhost/api/doc and https://stackoverflow.com/a/15076602/1352334[accept the auto-generated TLS certificate].
+. Open your browser on https://localhost/api/doc and <<accept-certificate-tls>>.
+
+==== Accept the auto-generated TLS certificate [[accept-certificate-tls]]
+
+NOTE: The following steps are based on the Stackoverflow answer https://stackoverflow.com/a/15076602/1352334[Getting Chrome to accept self-signed localhost certificate].
+
+. On the page https://localhost/api/doc, click on the *lock > Certificate Information* then click on *Untrusted certificate*:
++
+image::doc/img/chrome-1-view-certificate.png[]
+. In the new dialog, click on the *Details* tab, and *Export* button:
++
+image::doc/img/chrome-2-certificate-details.png[]
+. You will export the *localhost.p7c* file. Click on *Save*:
++
+image::doc/img/chrome-3-export-p7c-file.png[]
+. Go on *chrome://settings/certificates* then on the *Authorities* tab and click on Import: choose the *localhost.p7c* file.
++
+image::doc/img/chrome-4-import-p7c-file.png[]
+. Check all boxes and click OK:
++
+image::doc/img/chrome-5-check-all.png[]
+. You can see *org-Caddy Local Authority* in the list:
++
+image::doc/img/chrome-6-caddy-local-authority.png[]
+. Restart Chrome (chrome://restart)
++
+image::doc/img/chrome-7-ok.png[]
+
+
 
 [NOTE]
 ====
@@ -455,7 +483,22 @@ $ docker compose build --pull --no-cache
 
 == Resources & Inspiration
 
+=== Dockerization
+
 * Dockerization of the project: https://github.com/dunglas/symfony-docker.
+
+=== Caddy & TLS
+
+* https://caddyserver.com/docs/
+* https://github.com/dunglas/symfony-docker/blob/main/docs/tls.md
+* https://github.com/FiloSottile/mkcert
+
+```
+{"level":"info","ts":1677857037.9273698,"msg":"warning: \"certutil\" is not available, install \"certutil\" with \"apt install libnss3-tools\" or \"yum install nss-tools\" and try again"}
+```
+
+=== API
+
 * Symfony documentation: https://symfony.com/doc/current/index.html
 * Build a REST API with Symfony: https://openclassrooms.com/fr/courses/7709361-construisez-une-api-rest-avec-symfony
 * Richardson Maturity Model: https://martinfowler.com/articles/richardsonMaturityModel.html
