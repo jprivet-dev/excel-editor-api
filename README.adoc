@@ -103,23 +103,33 @@ IMPORTANT: Be sure to install the latest version of https://docs.docker.com/comp
 ** `$ make logs`: Show live logs.
 . Open your browser on https://localhost/api/doc and <<accept-certificate-tls>>.
 
+[NOTE]
+====
+With {git_url_api}[Excel Editor API], you can use...
+
+* {git_url_spa}[Excel Editor SPA]: a front-end application made with https://angular.io/[Angular].
+* {git_url_insomnia}[Excel Editor Insomnia]: the configuration to test the API with https://insomnia.rest/[Insomnia].
+====
+
+{back_to_top}
+
 ==== Accept the auto-generated TLS certificate [[accept-certificate-tls]]
 
 NOTE: The following steps are based on the Stackoverflow answer https://stackoverflow.com/a/15076602/1352334[Getting Chrome to accept self-signed localhost certificate].
 
-. On the page https://localhost/api/doc, click on the *lock > Certificate Information* then click on *Untrusted certificate*:
+. On the page https://localhost/api/doc, click on *lock > Certificate Information*, then click on *Untrusted certificate*:
 +
 image::doc/img/chrome-1-view-certificate.png[]
-. In the new dialog, click on the *Details* tab, and *Export* button:
+. In the new dialog, click on the *Details* tab, and kbd:[Export] button:
 +
 image::doc/img/chrome-2-certificate-details.png[]
-. You will export the *localhost.p7c* file. Click on *Save*:
+. You will export the `localhost.p7c` file. Click on kbd:[Save] button:
 +
 image::doc/img/chrome-3-export-p7c-file.png[]
-. Go on *chrome://settings/certificates* then on the *Authorities* tab and click on Import: choose the *localhost.p7c* file.
+. Go on *chrome://settings/certificates* then on the *Authorities* tab, click on kbd:[Import] button and choose the `localhost.p7c` file.
 +
 image::doc/img/chrome-4-import-p7c-file.png[]
-. Check all boxes and click OK:
+. Check all boxes and click on kbd:[OK] button:
 +
 image::doc/img/chrome-5-check-all.png[]
 . You can see *org-Caddy Local Authority* in the list:
@@ -128,16 +138,6 @@ image::doc/img/chrome-6-caddy-local-authority.png[]
 . Restart Chrome (chrome://restart)
 +
 image::doc/img/chrome-7-ok.png[]
-
-
-
-[NOTE]
-====
-With {git_url_api}[Excel Editor API], you can use...
-
-* {git_url_spa}[Excel Editor SPA]: a front-end application made with https://angular.io/[Angular].
-* {git_url_insomnia}[Excel Editor Insomnia]: the configuration to test the API with https://insomnia.rest/[Insomnia].
-====
 
 {back_to_top}
 
@@ -305,21 +305,21 @@ IMPORTANT: The following configuration are provided for *PHPStorm 2022.3.2*
 === Docker Compose-based remote PHP interpreter
 
 . Go on  *Settings (Ctrl+Alt+S) > PHP*.
-. In the *PHP Settings* dialog, click on the Browse button kbd:[...] next to the *CLI Interpreter* list.
-. In the *CLI Interpreters* dialog that opens, click on kbd:[+] and select "From Docker, Vagrant, VM, WSL, Remote...".
+. In the *PHP Settings* dialog, click on kbd:[...] Browse button next to the *CLI Interpreter* list.
+. In the *CLI Interpreters* dialog that opens, click on kbd:[+] button and select *From Docker, Vagrant, VM, WSL, Remote...*.
 +
 image::doc/img/phpstorm-2022.3.2-settings-php-select-cli-interpreter.png[]
 . In the *Configure Remote PHP Interpreter* dialog that opens, select "Docker" :
 ** *Server:* Docker
 ** *Image name:* excel-editor-api-php:latest
 ** *PHP interpreter path:* php
-** And click on the button kbd:[OK].
+** And click on kbd:[OK] button.
 +
 image::doc/img/phpstorm-2022.3.2-settings-php-configure-remote-php-interpreterpng.png[]
-. In the *CLI Interpreters* dialog, click on the button kbd:[OK].
+. In the *CLI Interpreters* dialog, click on kbd:[OK] button.
 +
 image::doc/img/phpstorm-2022.3.2-settings-php-cli-interpreters.png[]
-. In the *Settings* dialog, click on kbd:[OK] or kbd:[Apply] to validate all.
+. In the *Settings* dialog, click on kbd:[OK] or kbd:[Apply] button to validate all.
 
 image::doc/img/phpstorm-2022.3.2-settings-php.png[]
 
@@ -345,7 +345,7 @@ NOTE: See https://www.jetbrains.com/help/phpstorm/using-php-code-sniffer.html#co
 . In *Configuration*, choose *By default project interpreter*.
 . In *Coding standard*, select kbd:[Custom] and choose the `phpcs.xml` file of this repository.
 . After the configuration of *PHP_CodeSniffer*, *PHPStorm* will highlight the problematic lines in the files and can run *PHP CS fixer*.
-. In the *Settings* dialog, click on kbd:[OK] or kbd:[Apply] to validate all.
+. In the *Settings* dialog, click on kbd:[OK] or kbd:[Apply] button to validate all.
 
 image::doc/img/phpstorm-2022.3.2-settings-php-codesniffer.png[]
 
@@ -384,8 +384,8 @@ NOTE: See https://www.jetbrains.com/help/phpstorm/using-php-mess-detector.html#c
 . Go on  *Settings (Ctrl+Alt+S) > PHP > Quality Tools*.
 . Expand the *PHP Mess Detector* area and switch kbd:[ON] the tool.
 . In *Configuration*, choose *By default project interpreter*.
-. In *Custom rulesets*, click on kbd:[+] and choose the `phpmd.xml` file of this repository.
-. In the *Settings* dialog, click on kbd:[OK] or kbd:[Apply] to validate all.
+. In *Custom rulesets*, click on kbd:[+] button and choose the `phpmd.xml` file of this repository.
+. In the *Settings* dialog, click on kbd:[OK] or kbd:[Apply] button to validate all.
 
 image::doc/img/phpstorm-2022.3.2-settings-php-mess-detector.png[]
 
@@ -406,13 +406,13 @@ $ composer require --dev phpmd/phpmd
 NOTE: See https://www.jetbrains.com/help/phpstorm/using-phpunit-framework.html#configure-phpunit-manually
 
 . Go on  *Settings (Ctrl+Alt+S) > PHP > Test Frameworks*.
-. Click on kbd:[+] and select *PHPUnit by Remote Interpreter*.
+. Click on kbd:[+] button and select *PHPUnit by Remote Interpreter*.
 +
 image::doc/img/phpstorm-2022.3.2-settings-phpunit-by-remote-interpreter.png[]
-. In *PHPUnit by Remote Interpreter*, select *excel-editor-api-php:latest* and click on kbd:[OK].
+. In *PHPUnit by Remote Interpreter*, select *excel-editor-api-php:latest* and click on kbd:[OK] button.
 +
 image::doc/img/phpstorm-2022.3.2-settings-phpunit-by-remote-interpreter-select.png[]
-. In the *Settings* dialog, click on kbd:[OK] or kbd:[Apply] to validate all.
+. In the *Settings* dialog, click on kbd:[OK] or kbd:[Apply] button to validate all.
 
 image::doc/img/phpstorm-2022.3.2-settings-phpunit.png[]
 
