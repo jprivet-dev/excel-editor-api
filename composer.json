@@ -1,7 +1,7 @@
 {
     "name": "excel-editor/api-with-symfony",
     "type": "project",
-    "version": "v1.1.0",
+    "version": "v1.2.0",
     "date": "2023-01-04",
     "license": "MIT",
     "description": "Study of a SPA (Angular) coupled to an API (Symfony), with import and edition of Excel data.",
