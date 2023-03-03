@@ -21,13 +21,14 @@ endif::[]
 :back_to_top_label: ⬆ Back to top
 :back_to_top: <<{back_to_top_target},{back_to_top_label}>>
 
-:main_title: Excel Editor (API with Symfony)
+:main_title: Excel Editor API
 :git_project_base: excel-editor
 :git_project_api: {git_project_base}-api
 :git_project_spa: {git_project_base}-spa
 :git_project_insomnia: {git_project_base}-insomnia
 :git_username: jprivet-dev
 :git_url_api: https://github.com/{git_username}/{git_project_api}
+:git_url_api_data: {git_url_api}/tree/main/data
 :git_url_spa: https://github.com/{git_username}/{git_project_spa}
 :git_url_insomnia: https://github.com/{git_username}/{git_project_insomnia}
 :git_ssh_api: git@github.com:{git_username}/{git_project_api}
@@ -53,20 +54,30 @@ endif::[]
 image:https://badgen.net/badge/release/{project_release}/blue[Project release,link=https://github.com/jprivet-dev/excel-editor-api/releases/tag/{project_release}]
 image:https://badgen.net/badge/php/{php_release}/7A86B8[PHP release,link=https://www.php.net/releases/{php_release_underscore}.php]
 image:https://badgen.net/badge/symfony/{symfony_release}/73D631[Symfony release,link=https://github.com/symfony/symfony/releases/tag/{symfony_release}]
-image:https://app.codacy.com/project/badge/Grade/65cecce3bac34c71ba7ba9035bbcabce["Codacy code quality", link="https://www.codacy.com/gh/jprivet-dev/excel-editor-api/dashboard?utm_source=github.com&utm_medium=referral&utm_content=jprivet-dev/excel-editor-api&utm_campaign=Badge_Grade"]
-image:https://app.codacy.com/project/badge/Coverage/65cecce3bac34c71ba7ba9035bbcabce["Codacy code quality", link="https://www.codacy.com/gh/jprivet-dev/excel-editor-api/dashboard?utm_source=github.com&utm_medium=referral&utm_content=jprivet-dev/excel-editor-api&utm_campaign=Badge_Coverage"]
+image:https://app.codacy.com/project/badge/Grade/65cecce3bac34c71ba7ba9035bbcabce["Codacy code quality",link="https://www.codacy.com/gh/jprivet-dev/excel-editor-api/dashboard?utm_source=github.com&utm_medium=referral&utm_content=jprivet-dev/excel-editor-api&utm_campaign=Badge_Grade"]
+image:https://app.codacy.com/project/badge/Coverage/65cecce3bac34c71ba7ba9035bbcabce["Codacy code quality",link="https://www.codacy.com/gh/jprivet-dev/excel-editor-api/dashboard?utm_source=github.com&utm_medium=referral&utm_content=jprivet-dev/excel-editor-api&utm_campaign=Badge_Coverage"]
 
 toc::[]
 
 == Presentation
 
-Study of an API (Symfony) and a SPA (Angular), to load data in CSV/Excel format, with consultation and modification of this data online.
+=== SPA, API & Insomnia
+
+Study of a complete application, with a {git_url_spa}[SPA (Angular)] and an {git_url_api}[API (Symfony)], which allows users to connect, and to be able, according to their rights, to import Excel data and modify them online.
 
 |===
-| API (Symfony/Docker) | {git_url_api}
-| SPA (Angular/Docker) | {git_url_spa}
-| Insomnia - design, debug and test the API (https://insomnia.rest/) | {git_url_insomnia}
+| Excel Editor SPA | {git_url_spa}
+| Excel Editor API | {git_url_api}
+| Excel Editor Insomnia | {git_url_insomnia}
 |===
+
+{back_to_top}
+
+=== Diagrams
+
+==== Global architecture
+
+image::doc/img/excel-editor-architecture-diagram.png[]
 
 {back_to_top}
 
@@ -74,60 +85,121 @@ Study of an API (Symfony) and a SPA (Angular), to load data in CSV/Excel format,
 
 === Docker Compose CLI
 
-Be sure to install the latest version of *Docker Compose CLI* plugin (https://docs.docker.com/compose/install/compose-plugin/). With the older generation of docker compose, I had encountered the following error:
-
-```
-$ docker-compose build --pull --no-cache
-...
-Status: Downloaded newer image for composer:2
- ---> daa583eddaba
-Step 27/31 : COPY composer.* symfony.* ./
-COPY failed: no source files were specified
-ERROR: Service 'php' failed to build : Build failed
-```
-
-Problem solved with the latest generation:
-
-```
-$ docker compose build --pull --no-cache
-```
+IMPORTANT: Be sure to install the latest version of https://docs.docker.com/compose/install/compose-plugin/[Docker Compose CLI plugin].
 
 {back_to_top}
 
 == Installation
 
+=== To the very first cloning of the project
+
 . `$ git clone {git_ssh_current}`.
 . `$ cd {git_project_current}`.
-. `$ make build`: Build (the first time) or rebuild fresh images if necessary.
-. `$ make start`: Create and start containers (alias: `$ make up`).
-. `$ make generate_keypair`: (the first time) Generate the SSL keys for the JWT authentication.
-. `$ make fixtures`: create an admin & an user profils.
-. Open https://localhost and https://stackoverflow.com/a/15076602/1352334[accept the auto-generated TLS certificate].
-. `$ make stop`: Stop and remove containers, networks (alias: `$ make down`).
+. `$ make install`: This command will execute the following commands:
+** `$ make build`: Build or rebuild fresh images if necessary.
+** `$ make detach`: Create and start containers in detached mode (no logs).
+** `$ make generate_keypair`: Generate the SSL keys for the JWT authentication.
+** `$ make fixtures`: Create an admin & an user profils.
+** `$ make logs`: Show live logs.
+. Open your browser on https://localhost/api/doc and <<accept-certificate-tls>>.
 
-NOTE: `$ make` to see all available commands.
+[NOTE]
+====
+With {git_url_api}[Excel Editor API], you can use...
+
+* {git_url_spa}[Excel Editor SPA]: a front-end application made with https://angular.io/[Angular].
+* {git_url_insomnia}[Excel Editor Insomnia]: the configuration to test the API with https://insomnia.rest/[Insomnia].
+====
+
+{back_to_top}
+
+==== Accept the auto-generated TLS certificate [[accept-certificate-tls]]
+
+NOTE: The following steps are based on the Stackoverflow answer https://stackoverflow.com/a/15076602/1352334[Getting Chrome to accept self-signed localhost certificate].
+
+. On the page https://localhost/api/doc, click on *lock > Certificate Information*, then click on *Untrusted certificate*:
++
+image::doc/img/chrome-1-view-certificate.png[]
+. In the new dialog, click on the *Details* tab, and kbd:[Export] button:
++
+image::doc/img/chrome-2-certificate-details.png[]
+. You will export the `localhost.p7c` file. Click on kbd:[Save] button:
++
+image::doc/img/chrome-3-export-p7c-file.png[]
+. Go on *chrome://settings/certificates* then on the *Authorities* tab, click on kbd:[Import] button and choose the `localhost.p7c` file.
++
+image::doc/img/chrome-4-import-p7c-file.png[]
+. Check all boxes and click on kbd:[OK] button:
++
+image::doc/img/chrome-5-check-all.png[]
+. You can see *org-Caddy Local Authority* in the list:
++
+image::doc/img/chrome-6-caddy-local-authority.png[]
+. Restart Chrome (chrome://restart)
++
+image::doc/img/chrome-7-ok.png[]
 
 {back_to_top}
 
-== Docker environments
+=== The following times
 
-When you run `$ docker compose up` it reads the overrides automatically (`docker-compose.yml` and `docker-compose.override.yml`).
+. Just launch the project with `$ make start` command.
+. Open your browser on https://localhost/api/doc.
 
-To deploy with this production Compose file you can run:
-
-```
-$  docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
-```
+[TIP]
+====
+* `$ make stop`: Stop and remove containers, networks (alias: `$ make down`).
+* `$ make`: See all available make commands.
+====
 
 {back_to_top}
+
+== Screenshot
+
+=== Nelmio documentation
+
+image::doc/img/nelmio-api-doc.png[]
+
+{back_to_top}
+
+== Upload Excel files
+
+The Excel files are uploaded and renamed (with a unique indentifier) in the `uploads` folder.
+
+TIP: You can test and upload the Excel files in the {git_url_api_data}[data] folder.
+
+To purge the `uploads` folder: `$ rm uploads/*.xlsx`.
+
+{back_to_top}
+
+== Main technical constraints for the study
+
+* Use of the latest version of https://symfony.com/[Symfony].
+* No https://api-platform.com/[API Platform] or http://jmsyst.com/libs/serializer[JMSSerializer]: the objective is to study in depth https://symfony.com/doc/current/components/serializer.html[the Serializer Component].
+* Use mainly the code generation commands (https://symfony.com/bundles/SymfonyMakerBundle/current/index.html[Symfony MakerBundle]).
+* The project must be dockerized (https://github.com/dunglas/symfony-docker[Symfony Docker]).
+* The project must have a consistent and correct code coverage.
+
+{back_to_top}
+
+// TODO: disable for the moment. To reactivate.
+//== Docker environments
+//
+//When you run `$ docker compose up` it reads the overrides automatically (`docker-compose.yml` and `docker-compose.override.yml`).
+//
+//To deploy with this production Compose file you can run:
+//
+//```
+//$  docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+//```
+//
+//{back_to_top}
 
 == API documentation with Nelmio
 
 NOTE: This project use https://github.com/nelmio/NelmioApiDocBundle
 
 Open https://localhost/api/doc to see the API documentation.
-
-image::doc/img/nelmio-api-doc.png[]
 
 {back_to_top}
 
@@ -161,7 +233,8 @@ That project (API & SPA) use the `camelCase` format for the property names of JS
 * https://openclassrooms.com/fr/courses/7709361-construisez-une-api-rest-avec-symfony/7795134-gerez-les-erreurs-et-ajoutez-la-validation
 ====
 
-In this project, *I will not use a listener or subscriber to force all errors into JSON format*. As for example with the following subscriber:
+In this project, *I will not use a listener or subscriber to force all errors into JSON format*.
+As for example with the following subscriber:
 
 ```php
 namespace App\EventSubscriber;
@@ -225,29 +298,60 @@ TIP: In addition, the JSON error will be automatically filled in depending on th
 
 == PHPStorm configuration
 
-IMPORTANT: The following configuration are provided for *PHPStorm 2022.3.1*
+IMPORTANT: The following configuration are provided for *PHPStorm 2022.3.2*
 
 {back_to_top}
 
 === Docker Compose-based remote PHP interpreter
 
-. In the *Settings/Preferences* dialog (kbd:[Ctrl+Alt+S]), go to *PHP*.
-. On the *PHP* page that opens, click the Browse button kbd:[...] next to the *CLI Interpreter* list.
-. In the *CLI Interpreters* dialog that opens, select "From Docker, Vagrant, VM, WSL, Remote...".
+. Go on  *Settings (Ctrl+Alt+S) > PHP*.
+. In the *PHP Settings* dialog, click on kbd:[...] Browse button next to the *CLI Interpreter* list.
+. In the *CLI Interpreters* dialog that opens, click on kbd:[+] button and select *From Docker, Vagrant, VM, WSL, Remote...*.
++
+image::doc/img/phpstorm-2022.3.2-settings-php-select-cli-interpreter.png[]
 . In the *Configure Remote PHP Interpreter* dialog that opens, select "Docker" :
 ** *Server:* Docker
 ** *Image name:* excel-editor-api-php:latest
 ** *PHP interpreter path:* php
-. In the *Configure Remote PHP Interpreter* dialog, click the button *OK*.
-. In the *CLI Interpreters* dialog, click the button *OK*.
+** And click on kbd:[OK] button.
++
+image::doc/img/phpstorm-2022.3.2-settings-php-configure-remote-php-interpreterpng.png[]
+. In the *CLI Interpreters* dialog, click on kbd:[OK] button.
++
+image::doc/img/phpstorm-2022.3.2-settings-php-cli-interpreters.png[]
+. In the *Settings* dialog, click on kbd:[OK] or kbd:[Apply] button to validate all.
 
-image::doc/img/phpstorm-settings-php.png[]
+image::doc/img/phpstorm-2022.3.2-settings-php.png[]
+
+[IMPORTANT]
+====
+I have a new problem, with PHPStorm 2023.3.1 and 2023.3.2, I did not have on my previous computer: after the configuration, *PHP_CodeSniffer* & *PHP Mess Detector* do not work with the *Remote PHP Interpreter*.
+
+image::doc/img/phpstorm-2023.3.2-settings-php-interpreter-error.png[]
+
+Search for a solution in progress...
+====
 
 {back_to_top}
 
 === PHP_CodeSniffer script associated with a PHP interpreter
 
-==== Installation
+==== Configuration
+
+NOTE: See https://www.jetbrains.com/help/phpstorm/using-php-code-sniffer.html#configure-php-code-sniffer-script-associated-with-php-interpreter
+
+. Go on  *Settings (Ctrl+Alt+S) > PHP > Quality Tools*.
+. Expand the *PHP_CodeSniffer* area and switch kbd:[ON] the tool.
+. In *Configuration*, choose *By default project interpreter*.
+. In *Coding standard*, select kbd:[Custom] and choose the `phpcs.xml` file of this repository.
+. After the configuration of *PHP_CodeSniffer*, *PHPStorm* will highlight the problematic lines in the files and can run *PHP CS fixer*.
+. In the *Settings* dialog, click on kbd:[OK] or kbd:[Apply] button to validate all.
+
+image::doc/img/phpstorm-2022.3.2-settings-php-codesniffer.png[]
+
+{back_to_top}
+
+==== How is it installed?
 
 NOTE: See https://github.com/squizlabs/PHP_CodeSniffer
 
@@ -271,23 +375,23 @@ $ composer update           # with .bash_aliases
 
 {back_to_top}
 
+=== PHP Mess Detector script associated with a PHP interpreter
+
 ==== Configuration
 
-NOTE: See https://www.jetbrains.com/help/phpstorm/using-php-code-sniffer.html#configure-php-code-sniffer-script-associated-with-php-interpreter
+NOTE: See https://www.jetbrains.com/help/phpstorm/using-php-mess-detector.html#configure-a-php-mess-detector-script-associated-with-a-php-interpreter
 
-image::doc/img/phpstorm-settings-php-codesniffer.png[]
+. Go on  *Settings (Ctrl+Alt+S) > PHP > Quality Tools*.
+. Expand the *PHP Mess Detector* area and switch kbd:[ON] the tool.
+. In *Configuration*, choose *By default project interpreter*.
+. In *Custom rulesets*, click on kbd:[+] button and choose the `phpmd.xml` file of this repository.
+. In the *Settings* dialog, click on kbd:[OK] or kbd:[Apply] button to validate all.
 
-[TIP]
-====
-* In *Coding standard*, select *Custom* and choose the `phpcs.xml` file of this repository.
-* After the configuration of *PHP_CodeSniffer*, *PHPStorm* will highlight the problematic lines in the files and can run *PHP CS fixer*.
-====
+image::doc/img/phpstorm-2022.3.2-settings-php-mess-detector.png[]
 
 {back_to_top}
 
-=== PHP Mess Detector script associated with a PHP interpreter
-
-==== Installation
+==== How is it installed?
 
 NOTE: See https://packagist.org/packages/phpmd/phpmd
 
@@ -295,29 +399,34 @@ NOTE: See https://packagist.org/packages/phpmd/phpmd
 $ composer require --dev phpmd/phpmd
 ```
 
-==== Configuration
-
-NOTE: See https://www.jetbrains.com/help/phpstorm/using-php-mess-detector.html#configure-a-php-mess-detector-script-associated-with-a-php-interpreter
-
-image::doc/img/phpstorm-settings-php-mess-detector.png[]
-
-TIP: In *Custom rulesets*, click on *+* and choose the `phpmd.xml` file of this repository.
-
-{back_to_top}
-
 === PHP Unit associated with a PHP interpreter
 
 ==== Configuration
 
 NOTE: See https://www.jetbrains.com/help/phpstorm/using-phpunit-framework.html#configure-phpunit-manually
 
-image::doc/img/phpstorm-settings-phpunit.png[]
+. Go on  *Settings (Ctrl+Alt+S) > PHP > Test Frameworks*.
+. Click on kbd:[+] button and select *PHPUnit by Remote Interpreter*.
++
+image::doc/img/phpstorm-2022.3.2-settings-phpunit-by-remote-interpreter.png[]
+. In *PHPUnit by Remote Interpreter*, select *excel-editor-api-php:latest* and click on kbd:[OK] button.
++
+image::doc/img/phpstorm-2022.3.2-settings-phpunit-by-remote-interpreter-select.png[]
+. In the *Settings* dialog, click on kbd:[OK] or kbd:[Apply] button to validate all.
 
-==== Run PHPUnit tests automatically
+image::doc/img/phpstorm-2022.3.2-settings-phpunit.png[]
 
-On the *Test Runner tab*, press on *Toggle auto-test* on the toolbar:
+==== Run PHPUnit tests
 
-image::doc/img/phpstorm-settings-phpunit-toggle-auto-test.png[]
+For example, in the *Project* tool window, select the file or folder to run your tests from and choose *Run '<file or folder>'* from the context menu of the selection:
+
+image::doc/img/phpstorm-2022.3.2-phpunit-launch.png[]
+
+PhpStorm generates a default run configuration and starts a run test session with it:
+
+image::doc/img/phpstorm-2022.3.2-phpunit-results.png[]
+
+NOTE: More information on https://www.jetbrains.com/help/phpstorm/using-phpunit-framework.html#run_phpunit_tests
 
 {back_to_top}
 
@@ -347,12 +456,53 @@ The file `scripts/reporter.sh` generates code coverage (a `clover.xml` file with
 
 {back_to_top}
 
+== Troubleshooting
+
+=== Docker Compose CLI
+
+Be sure to install the latest version of https://docs.docker.com/compose/install/compose-plugin/[Docker Compose CLI plugin].
+With the older generation of docker compose, I had encountered the following error:
+
+```
+$ docker-compose build --pull --no-cache
+...
+Status: Downloaded newer image for composer:2
+ ---> daa583eddaba
+Step 27/31 : COPY composer.* symfony.* ./
+COPY failed: no source files were specified
+ERROR: Service 'php' failed to build : Build failed
+```
+
+Problem solved with the latest generation:
+
+```
+$ docker compose build --pull --no-cache
+```
+
+{back_to_top}
+
 == Resources & Inspiration
 
+=== Dockerization
+
 * Dockerization of the project: https://github.com/dunglas/symfony-docker.
+
+=== Caddy & TLS
+
+* https://caddyserver.com/docs/
+* https://github.com/dunglas/symfony-docker/blob/main/docs/tls.md
+* https://github.com/FiloSottile/mkcert
+
+```
+{"level":"info","ts":1677857037.9273698,"msg":"warning: \"certutil\" is not available, install \"certutil\" with \"apt install libnss3-tools\" or \"yum install nss-tools\" and try again"}
+```
+
+=== API
+
 * Symfony documentation: https://symfony.com/doc/current/index.html
 * Build a REST API with Symfony: https://openclassrooms.com/fr/courses/7709361-construisez-une-api-rest-avec-symfony
 * Richardson Maturity Model: https://martinfowler.com/articles/richardsonMaturityModel.html
+* Building Restful APIs with Symfony 5 and PHP 8: https://dev.to/hantsy_26/-building-restful-apis-with-symfony-5-and-php-8-1p2e
 
 {back_to_top}
 

@@ -2,7 +2,7 @@ nelmio_api_doc:
     documentation:
         info:
             title: Excel Editor (API with Symfony)
-            description: Study of an API (Symfony) and a SPA (Angular), to load data in CSV/Excel format, with consultation and modification of this data online.
+            description: Study of a SPA (Angular) coupled to an API (Symfony), with import and edition of Excel data.
             version: 1.0.0
         components:
             securitySchemes:
@@ -27,7 +27,7 @@ nelmio_api_doc:
                             type: string
                             readOnly: true
         security:
-            - Bearer: []
+            -   Bearer: [ ]
         paths:
             /api/login_check:
                 post:

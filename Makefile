@@ -1,3 +1,7 @@
+# URLs
+URL_LOCALHOST = https://localhost
+URL_DOC = $(URL_LOCALHOST)/api/doc
+
 # Docker files
 DOCKER_COMP_FILE 			= docker-compose.yml
 DOCKER_COMP_FILE_OVERRIDE 	= docker-compose.override.yml
@@ -16,12 +20,14 @@ DOCKER_COMP = $(DOCKER_COMP_BASE)
 DOCKER_COMP_PROD = $(DOCKER_COMP_BASE) -f $(DOCKER_COMP_FILE) -f $(DOCKER_COMP_FILE_PROD)
 
 # Docker containers
-PHP_CONT = $(DOCKER_COMP) exec php
+PHP_CONT 	= $(DOCKER_COMP) exec php
+CADDY_CONT 	= $(DOCKER_COMP) exec caddy
 
 # Executables
 PHP      = $(PHP_CONT) php
 COMPOSER = $(PHP_CONT) composer
 SYMFONY  = $(PHP_CONT) bin/console
+CADDY    = $(CADDY_CONT) caddy
 
 ## — 🎵 🐳 THE SYMFONY DOCKER MAKEFILE 🐳 🎵 ——————————————————————————————————
 
@@ -49,10 +55,18 @@ help: ## Print self-documented Makefile
 		}'
 	@echo
 
+.PHONY: info
+info: ## Print info & URLs
+	@echo "------------------------"
+	@echo "|   Excel Editor API   |"
+	@echo "------------------------"
+	@echo "LOCALHOST: $(URL_LOCALHOST)"
+	@echo "DOC:       $(URL_DOC)"
+
 ## — DOCKER 🐳 ————————————————————————————————————————————————————————————————
 
 .PHONY: build
-build: ## Build the first time or rebuild fresh images if necessary
+build: ## Build (the first time) or rebuild fresh images if necessary
 	$(DOCKER_COMP) build --pull --no-cache
 
 .PHONY: up
@@ -78,7 +92,7 @@ logs: ## Show live logs
 ##
 
 .PHONY: install
-install: build up ## Build & Start
+install: build detach generate_keypair fixtures logs ## Full installation (to the very first cloning of the project)
 
 .PHONY: start
 start: up ## 'up' alias
@@ -205,6 +219,17 @@ phpcbf: ## Run PHP CS Fixer (PHP_CodeSniffer). Pass the parameter "c=" to run a 
 phpmd: ## Run PHP Mess Detector on `src` folder by default. Pass the parameter "c=" to run a given command (example: make phpcs c=src/Kernel.php)
 	@$(eval c ?= $(FOLDERS))
 	$(PHP_CONT) ./vendor/bin/phpmd $(c) ansi phpmd.xml
+
+## — CADDY 🖥 ————————————————————————————————————————————————————————————————
+
+.PHONY: caddy
+caddy: ## List all Caddy commands or pass the parameter "c=" to run a given command (example: make caddy c=version)
+	@$(eval c ?=)
+	$(CADDY) $(c)
+
+.PHONY: caddy_sh
+caddy_sh: ## Connect to the CADDY container
+	$(CADDY_CONT) sh
 
 ## — JWT & OPENSSL 🔒️ —————————————————————————————————————————————————————————
 

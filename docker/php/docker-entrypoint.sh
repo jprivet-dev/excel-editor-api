@@ -63,6 +63,10 @@ if [ "$1" = 'php-fpm' ] || [ "$1" = 'php' ] || [ "$1" = 'bin/console' ]; then
 
 	setfacl -R -m u:www-data:rwX -m u:"$(whoami)":rwX var
 	setfacl -dR -m u:www-data:rwX -m u:"$(whoami)":rwX var
+
+	# Avoid the Symfony FileException "Unable to create the "/srv/app/uploads" directory.".
+	setfacl -R -m u:www-data:rwX -m u:"$(whoami)":rwX uploads
+	setfacl -dR -m u:www-data:rwX -m u:"$(whoami)":rwX uploads
 fi
 
 exec docker-php-entrypoint "$@"

@@ -4,7 +4,7 @@
     "version": "v1.1.0",
     "date": "2023-01-04",
     "license": "MIT",
-    "description": "Study of an API (Symfony) and a SPA (Angular), to load data in CSV/Excel format, with consultation and modification of this data online.",
+    "description": "Study of a SPA (Angular) coupled to an API (Symfony), with import and edition of Excel data.",
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {
