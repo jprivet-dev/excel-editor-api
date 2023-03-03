@@ -43,7 +43,7 @@ endif::[]
 :codacy_project_settings_coverage: https://app.codacy.com/gh/{git_username}/{git_project_api}/settings/coverage
 
 // Releases
-:project_release: v1.1.0
+:project_release: v1.2.0
 :php_release: 8.2.0
 :php_release_underscore: 8_2_0
 :symfony_release: v6.1.10
