@@ -52,19 +52,19 @@ class DataImportServiceTest extends TestCase
     public function provideParams()
     {
         // linesCount | importedCount | alreadyExistCount | onConsecutiveCalls
-        yield 'Without allready imported data' => [
+        yield 'Without already imported data' => [
             9,
             9,
             0,
             [[], [], [], [], [], [], [], [], []],
         ];
-        yield 'With 2 allready imported data' => [
+        yield 'With 2 already imported data' => [
             9,
             7,
             2,
             [[], [], [], [], [], [], [], [new Data()], [new Data()]],
         ];
-        yield 'With only allready imported data' => [
+        yield 'With only already imported data' => [
             9,
             0,
             9,
