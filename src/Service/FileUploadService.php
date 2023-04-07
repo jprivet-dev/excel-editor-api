@@ -19,10 +19,8 @@ class FileUploadService
     public function save(UploadedFile $uploadedFile): FileUpload
     {
         $filename = $this->upload($uploadedFile);
-
         $file = new FileUpload($this->uploadsDirectory);
         $file->setFilename($filename);
-
         $this->repository->add($file, true);
 
         return $file;
@@ -32,7 +30,7 @@ class FileUploadService
     {
         $originalFilename = pathinfo($uploadedFile->getClientOriginalName(), PATHINFO_FILENAME);
         $safeFilename = $this->slugger->slug($originalFilename);
-        $fileName = $safeFilename . '-' . uniqid() . '.' . $uploadedFile->guessExtension();
+        $fileName = $safeFilename.'-'.uniqid().'.'.$uploadedFile->guessExtension();
         $uploadedFile->move($this->uploadsDirectory, $fileName);
 
         return $fileName;
