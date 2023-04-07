@@ -9,6 +9,7 @@ use App\Model\DataTableHeadersMapping;
 use App\Repository\DataRepository;
 use App\Validator\DataTableHeaders;
 use Spatie\SimpleExcel\SimpleExcelReader;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -29,7 +30,7 @@ class DataImportService
     }
 
     /**
-     * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
+     * @throws ExceptionInterface
      */
     public function import(FileUpload $file): void
     {
@@ -80,7 +81,7 @@ class DataImportService
     }
 
     /**
-     * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
+     * @throws ExceptionInterface
      */
     private function add(array $row): void
     {
