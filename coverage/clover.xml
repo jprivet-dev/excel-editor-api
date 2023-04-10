@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1681141638">
-  <project timestamp="1681141638">
+<coverage generated="1681142037">
+  <project timestamp="1681142037">
     <file name="/srv/app/src/Controller/DataController.php">
       <class name="App\Controller\DataController" namespace="global">
         <metrics complexity="6" methods="5" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="23" coveredstatements="0" elements="28" coveredelements="0"/>
