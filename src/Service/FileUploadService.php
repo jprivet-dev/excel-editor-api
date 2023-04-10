@@ -30,7 +30,7 @@ class FileUploadService
     {
         $originalFilename = pathinfo($uploadedFile->getClientOriginalName(), PATHINFO_FILENAME);
         $safeFilename = $this->slugger->slug($originalFilename);
-        $fileName = $safeFilename.'-'.uniqid().'.'.$uploadedFile->guessExtension();
+        $fileName = $safeFilename . '-' . uniqid() . '.' . $uploadedFile->guessExtension();
         $uploadedFile->move($this->uploadsDirectory, $fileName);
 
         return $fileName;
