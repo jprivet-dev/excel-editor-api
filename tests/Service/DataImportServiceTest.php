@@ -7,8 +7,11 @@ use App\Entity\FileUpload;
 use App\Repository\DataRepository;
 use App\Service\DataImportService;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationList;
+use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class DataImportServiceTest extends TestCase
@@ -49,22 +52,22 @@ class DataImportServiceTest extends TestCase
         $this->assertEquals($alreadyExistCount, $service->getStats()->getAlreadyExistCount());
     }
 
-    public function provideParams()
+    public function provideParams(): \Generator
     {
         // linesCount | importedCount | alreadyExistCount | onConsecutiveCalls
-        yield 'Without allready imported data' => [
+        yield 'Without already imported data' => [
             9,
             9,
             0,
             [[], [], [], [], [], [], [], [], []],
         ];
-        yield 'With 2 allready imported data' => [
+        yield 'With 2 already imported data' => [
             9,
             7,
             2,
             [[], [], [], [], [], [], [], [new Data()], [new Data()]],
         ];
-        yield 'With only allready imported data' => [
+        yield 'With only already imported data' => [
             9,
             0,
             9,
@@ -80,5 +83,38 @@ class DataImportServiceTest extends TestCase
                 [new Data()],
             ],
         ];
+    }
+
+    /**
+     * @throws ExceptionInterface
+     */
+    public function testImportWithException(): void
+    {
+        $this->expectException(ValidationFailedException::class);
+
+        $file = (new FileUpload(__DIR__))->setFilename('Fixtures/data.xlsx');
+
+        $dataRepository = $this->createMock(DataRepository::class);
+        $denormalizer = $this->createMock(DenormalizerInterface::class);
+
+        $violations = new ConstraintViolationList([
+            $this->getViolation('Error'),
+        ]);
+
+        $validator = $this->createMock(ValidatorInterface::class);
+        $validator
+            ->expects($this->once())
+            ->method('validate')
+            ->willReturn($violations);
+
+        $service = new DataImportService($dataRepository, $denormalizer, $validator);
+        $service->import($file);
+
+        $this->assertTrue(true);
+    }
+
+    protected function getViolation($message, $root = null, $propertyPath = null, $code = null): ConstraintViolation
+    {
+        return new ConstraintViolation($message, $message, [], $root, $propertyPath, null, null, $code);
     }
 }

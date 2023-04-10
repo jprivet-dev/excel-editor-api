@@ -16,8 +16,9 @@ abstract class StringUtil
      */
     public static function trim(string $string): string
     {
-        $chars = " \t\n\r\0\x0B\x0C\u{A0}\u{FEFF}";
-
-        return preg_replace("{^[$chars]++|[$chars]++$}uD", '', $string);
+        // Pattern Modifiers (@see https://www.php.net/manual/en/reference.pcre.pattern.modifiers.php)
+        // - u: Pattern and subject strings are treated as UTF-8.
+        // - D: A dollar metacharacter in the pattern matches only at the end of the subject string.
+        return preg_replace('/^[\s\0\x0B\x0C]+|[\s\0\x0B\x0C]+$/uD', '', $string);
     }
 }

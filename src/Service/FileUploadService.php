@@ -19,10 +19,8 @@ class FileUploadService
     public function save(UploadedFile $uploadedFile): FileUpload
     {
         $filename = $this->upload($uploadedFile);
-
         $file = new FileUpload($this->uploadsDirectory);
         $file->setFilename($filename);
-
         $this->repository->add($file, true);
 
         return $file;

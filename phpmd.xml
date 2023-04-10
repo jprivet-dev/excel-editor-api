@@ -16,16 +16,18 @@
     <exclude-pattern>/public</exclude-pattern>
 
     <!-- https://phpmd.org/rules/#clean-code-rules -->
-    <rule ref="rulesets/cleancode.xml" />
+    <rule ref="rulesets/cleancode.xml">
+        <exclude name="StaticAccess"/>
+    </rule>
 
     <!-- https://phpmd.org/rules/#code-size-rules -->
-    <rule ref="rulesets/codesize.xml" />
+    <rule ref="rulesets/codesize.xml"/>
 
     <!-- https://phpmd.org/rules/#controversial-rules -->
-    <rule ref="rulesets/controversial.xml" />
+    <rule ref="rulesets/controversial.xml"/>
 
     <!-- https://phpmd.org/rules/#design-rules -->
-    <rule ref="rulesets/design.xml" />
+    <rule ref="rulesets/design.xml"/>
 
     <!-- https://phpmd.org/rules/#naming-rules -->
     <rule ref="rulesets/naming.xml">
@@ -42,7 +44,7 @@
         <priority>3</priority>
         <properties>
             <property name="minimum" description="Minimum length for a variable, property or parameter name" value="3"/>
-            <property name="exceptions" value="id" />
+            <property name="exceptions" value="id"/>
         </properties>
     </rule>
 

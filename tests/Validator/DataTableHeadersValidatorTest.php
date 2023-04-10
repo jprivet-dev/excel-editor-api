@@ -4,6 +4,8 @@ namespace App\Tests\Validator;
 
 use App\Validator\DataTableHeaders;
 use App\Validator\DataTableHeadersValidator;
+use Symfony\Component\Validator\Constraint;
+use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Exception\UnexpectedValueException;
 use Symfony\Component\Validator\Test\ConstraintValidatorTestCase;
 
@@ -11,7 +13,7 @@ class DataTableHeadersValidatorTest extends ConstraintValidatorTestCase
 {
     protected array $expectedHeaders = ['HEADER_1', 'HEADER_2', 'HEADER_3',];
 
-    protected function createValidator()
+    protected function createValidator(): DataTableHeadersValidator
     {
         return new DataTableHeadersValidator();
     }
@@ -91,4 +93,12 @@ class DataTableHeadersValidatorTest extends ConstraintValidatorTestCase
             ->setParameter('{{ headers }}', '"HEADER_3", "HEADER_2"')
             ->assertRaised();
     }
+
+    public function testInvalidConstraint()
+    {
+        $this->expectException(UnexpectedTypeException::class);
+        $constraint = $this->getMockForAbstractClass(Constraint::class);
+        $this->validator->validate(null, $constraint);
+    }
+
 }

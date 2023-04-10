@@ -12,8 +12,12 @@ class DataTableHeaders extends Constraint
     public string $notOrderedMessage = 'The headers are not in the right order [{{ headers }}].';
     public array $expectedHeaders;
 
-    public function __construct(array $expectedHeaders = [], mixed $options = null, array $groups = null, mixed $payload = null)
-    {
+    public function __construct(
+        array $expectedHeaders = [],
+        mixed $options = null,
+        array $groups = null,
+        mixed $payload = null
+    ) {
         $this->expectedHeaders = $expectedHeaders ?? $this->expectedHeaders;
 
         parent::__construct($options, $groups, $payload);

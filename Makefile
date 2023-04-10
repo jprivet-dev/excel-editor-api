@@ -190,10 +190,10 @@ mapping_info: ## List mapped entities
 fixtures: ## Load fixtures
 	$(SYMFONY) doctrine:fixtures:load
 
-## — TEST & QUALITY ✅ ————————————————————————————————————————————————————————
+## — TESTS & QUALITY ✅ ———————————————————————————————————————————————————————
 
-.PHONY: test
-test: ## Run PHPUnit. Pass the parameter "c=" to run a given command (example: make test c=tests/Service/DataImportServiceTest.php)
+.PHONY: tests
+tests: ## Run PHPUnit. Pass the parameter "c=" to run a given command (example: make tests c=tests/Service/DataImportServiceTest.php)
 	@$(eval c ?=)
 	$(PHP) bin/phpunit $(c)
 
