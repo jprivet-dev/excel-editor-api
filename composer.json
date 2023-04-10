@@ -1,7 +1,7 @@
 {
     "name": "jprivet-dev/excel-editor-api",
     "type": "project",
-    "version": "v1.2.0",
+    "version": "v1.3.0",
     "date": "2023-01-04",
     "license": "MIT",
     "description": "Study of a complete application, with a SPA (Angular) and an API (Symfony), which allows users to connect, and to be able, according to their rights, to import Excel data and modify them online.",
